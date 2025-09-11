@@ -15,7 +15,6 @@ import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/Landline/landline_
 import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/LoanRepaymentScreen/select_lender_screen.dart';
 import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/WaterBillScreen/select_provider_screen.dart';
 import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/MunicipalServiceScreen/municipal_service_screen.dart';
-
 import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/balance_and_history_screen.dart';
 import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/car_insurance_screen.dart';
 import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/digiwallet_postpaid_screen.dart';
@@ -44,6 +43,7 @@ import 'package:digitalwalletpaytmcloneapp/Screens/SearchScreen/search_screen.da
 import 'package:digitalwalletpaytmcloneapp/Screens/ScannerScreen/scanner_screen.dart';
 import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/CableTv/cable_screen.dart';
 import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/MunicipalTax/municipal_screen.dart';
+import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/Donation/donation_screen.dart';
 
 
 
@@ -146,14 +146,14 @@ class Lists {
       "image": Images.creditcard,
       "text": "Municipal\nServices",
       "onTap": () {
-        Get.to(() => SelectMunicipalScreen());
+        Get.to(() => MunicipalServiceScreen());
       },
     },
     {
       "image": Images.mobilePostPaid,
       "text": "Municipal\nTax",
       "onTap": () {
-        Get.to(() => MobileRechargeScreen());
+        Get.to(() => SelectMunicipalScreen());
       },
     },
     {
@@ -216,7 +216,7 @@ class Lists {
       "image": Images.wallet,
       "text": "Housing Society",
       "onTap": () {
-        Get.to(() => DigiWalletProfileUpdateScreen());
+        Get.to(() => SelectSocietyScreen());
       }
     },
     {
@@ -251,7 +251,7 @@ class Lists {
       "image": Images.movieTickets,
       "text": "Water\nService",
       "onTap": () {
-        Get.to(() => MovieTicketScreen());
+        Get.to(() => SelectProviderScreen1());
       }
     },
     {
@@ -265,10 +265,16 @@ class Lists {
     {
       "image": Images.movieTickets2,
       "text": "Donation",
+        "onTap": () {
+        Get.to(() => SelectDonationScreen());
+      }
     },
     {
       "image": Images.creditCard2,
       "text": "FASTag\nRecharge",
+          "onTap": () {
+        Get.to(() => SelectYourFastagScreen());
+      }
     },
     {
       "image": Images.eventTickets,
@@ -298,6 +304,9 @@ class Lists {
     {
       "image": Images.rentViaCreditCard,
       "text": "Cable TV",
+        "onTap": () {
+        Get.to(() => SelectCableScreen());
+      },
     },
     {
       "image": Images.dthRecharge,
@@ -317,30 +326,31 @@ class Lists {
       "image": Images.creditcard,
       "text": "Municipal\nServices",
       "onTap": () {
-        Get.to(() => CreditCardScreen());
+        Get.to(() => MunicipalServiceScreen());
       },
     },
     {
       "image": Images.mobilePostPaid,
       "text": "Municipal\nTax",
       "onTap": () {
-        Get.to(() => MobileRechargeScreen());
+        Get.to(() => SelectMunicipalScreen());
       },
     },
     {
       "image": Images.bookGasCylinder,
       "text": "Gas\nCylinder",
       "onTap": () {
-        // Get.to(() => CreditCardScreen());
+        Get.to(() => CyclinerAgencyScreen());
       },
     },
     {
       "image": Images.broadBandLandline,
       "text": "Broadband\nLandline",
       "onTap": () {
-        // Get.to(() => CreditCardScreen());
+        Get.to(() => SelectProviderScreen());
       },
     },
+    
   ];
 
   static List<Map> investAndTradStockList = [

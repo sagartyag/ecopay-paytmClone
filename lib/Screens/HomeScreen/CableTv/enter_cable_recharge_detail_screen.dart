@@ -1,31 +1,61 @@
-import 'package:digitalwalletpaytmcloneapp/Constants/colors.dart';
-import 'package:digitalwalletpaytmcloneapp/Constants/font_family.dart';
-import 'package:digitalwalletpaytmcloneapp/Constants/images.dart';
-import 'package:digitalwalletpaytmcloneapp/Utils/common_button_widget.dart';
-import 'package:digitalwalletpaytmcloneapp/Utils/common_text_widget.dart';
-import 'package:digitalwalletpaytmcloneapp/Utils/common_textfeild_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:digitalwalletpaytmcloneapp/Service/Api.dart';
+import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/CableTv/dth_plan_screen.dart';
 
 class EnterCableRechargeDetailScreen extends StatelessWidget {
   EnterCableRechargeDetailScreen({Key? key}) : super(key: key);
-  final TextEditingController tvController = TextEditingController();
+
   final TextEditingController numberController = TextEditingController();
+
+  /// 👉 Backend से DTH Plans fetch करने का function
+  Future<void> fetchDthPlan(String operator, String mobile, BuildContext context) async {
+    try {
+      final response = await ApiService.post(
+        "/dth-plans", // केवल endpoint, baseUrl ApiService में पहले से है
+        {
+          "operator": operator,
+          "mobile": mobile,
+        },
+      );
+
+      final data = response.data;
+        print("data sagar: $data");
+      if (data["success"] == true) {
+        final plans = data["data"]["records"] ?? [];
+
+        // ✅ Plans Screen पर navigate
+        Get.to(() => DthPlansScreen(), arguments: {
+          "operator": operator,
+          "mobile": mobile,
+          "plans": plans,
+        });
+      } else {
+        Get.snackbar("Error", data["message"] ?? "No plans found");
+      }
+    } catch (e) {
+      Get.snackbar("Error", "Something went wrong: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final args = Get.arguments ?? {};
+    final operatorName = args["operatorName"] ?? "Unknown Operator";
+
     return Scaffold(
-      backgroundColor: white,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: white,
+        backgroundColor: Colors.white,
         centerTitle: true,
         elevation: 0,
-        automaticallyImplyLeading: false,
         leading: InkWell(
-          onTap: () {
-            Get.back();
-          },
-          child: Icon(Icons.arrow_back, size: 20, color: black171),
+          onTap: () => Get.back(),
+          child: Icon(Icons.arrow_back, size: 20, color: Colors.black),
+        ),
+        title: Text(
+          "Cable TV Recharge",
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
         ),
       ),
       body: Padding(
@@ -34,128 +64,49 @@ class EnterCableRechargeDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 20),
-            CommonTextWidget.InterBold(
-              text: "Enter Details",
-              fontSize: 22,
-              color: black171,
-            ),
+            Text("Enter Details", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             SizedBox(height: 25),
-            CommonTextWidget.InterMedium(
-              text: "ACT Landline",
-              fontSize: 14,
-              color: black171,
-            ),
+
+            // ✅ Operator Name
+            Text(operatorName, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black)),
+            SizedBox(height: 20),
+
+            // ✅ Customer ID Field
+            Text("Mobile Number", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
             SizedBox(height: 10),
             TextFormField(
-              keyboardType: TextInputType.text,
-              cursorColor: Colors.green,
-              controller: tvController,
-              style: TextStyle(
-                color: black171,
-                fontSize: 14,
-                fontFamily: FontFamily.InterSemiBold,
-              ),
-              decoration: InputDecoration(
-                hintText: "Airtel Digital TV",
-                hintStyle: TextStyle(
-                  color: black171,
-                  fontSize: 16,
-                  fontFamily: FontFamily.InterMedium,
-                ),
-                prefixIcon: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(left: 15),
-                      child: Image.asset(Images.airtelImage,
-                          height: 25, width: 25),
-                    ),
-                    SizedBox(width: 10),
-                    Container(
-                      height: 40,
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      child: VerticalDivider(
-                        color: greyA6A,
-                        thickness: 1,
-                        indent: 0,
-                        endIndent: 0,
-                        width: 10,
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                  ],
-                ),
-                suffixIcon: InkWell(
-                  onTap: () {
-                    Get.back();
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.all(20),
-                    child: CommonTextWidget.InterMedium(
-                      text: "Change",
-                      fontSize: 12,
-                      color: Colors.green,
-                    ),
-                  ),
-                ),
-                filled: true,
-                fillColor: whiteF9F,
-                contentPadding: EdgeInsets.only(left: 15),
-                disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(88),
-                    borderSide: BorderSide(color: greyA6A, width: 0.5)),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(88),
-                    borderSide: BorderSide(color: greyA6A, width: 0.5)),
-                focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(88),
-                    borderSide: BorderSide(color: greyA6A, width: 0.5)),
-                enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(88),
-                    borderSide: BorderSide(color: greyA6A, width: 0.5)),
-                errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(88),
-                    borderSide: BorderSide(color: greyA6A, width: 0.5)),
-              ),
-            ),
-            SizedBox(height: 20),
-            CommonTextWidget.InterMedium(
-              text: "Account Number/User Name",
-              fontSize: 14,
-              color: black171,
-            ),
-            SizedBox(height: 10),
-            CommonTextFieldWidget.TextFormField3(
               controller: numberController,
-              hintText: "1234567890",
               keyboardType: TextInputType.number,
-            ),
-            SizedBox(height: 10),
-            RichText(
-              text: TextSpan(
-                text:
-                    "Account Number starts with 1 and is 7-12 digits long. ",
-                style: TextStyle(
-                  fontFamily: FontFamily.InterRegular,
-                  fontSize: 12,
-                  color: grey757,
-                ),
-                children: <TextSpan>[
-                  TextSpan(
-                    text: "Know More",
-                    style: TextStyle(
-                        fontSize: 12,
-                        fontFamily: FontFamily.InterRegular,
-                        color: Colors.green),
-                  ),
-                ],
+              decoration: InputDecoration(
+                hintText: "Enter Mobile Number",
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
               ),
             ),
+
             Spacer(),
-            CommonButtonWidget.button(
-              onTap: () {},
-              buttonColor: Colors.green,
-              text: "Proceed",
+
+            // ✅ Proceed Button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  padding: EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onPressed: () {
+                  final mobile = numberController.text.trim();
+                  if (mobile.isEmpty) {
+                    Get.snackbar("Error", "Please enter Customer ID");
+                    return;
+                  }
+                  fetchDthPlan(operatorName, mobile, context);
+                },
+                child: Text("Proceed", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              ),
             ),
             SizedBox(height: 45),
           ],

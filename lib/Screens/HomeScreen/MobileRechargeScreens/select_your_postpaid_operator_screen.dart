@@ -22,6 +22,7 @@ class SelectYourPostpaidOperatorScreen2 extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: white,
         centerTitle: true,
+        
         elevation: 0,
         automaticallyImplyLeading: false,
         leading: InkWell(

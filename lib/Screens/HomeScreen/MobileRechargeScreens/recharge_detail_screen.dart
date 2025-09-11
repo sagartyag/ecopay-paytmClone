@@ -2,12 +2,17 @@ import 'package:digitalwalletpaytmcloneapp/Constants/colors.dart';
 import 'package:digitalwalletpaytmcloneapp/Utils/common_text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 class RechargeDetailScreen extends StatelessWidget {
-  RechargeDetailScreen({Key? key}) : super(key: key);
+  final Map<String, dynamic> plan;
+
+  RechargeDetailScreen({Key? key, required this.plan}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final amount = plan["recharge_amount"] ?? "0";
+    final validity = plan["recharge_validity"] ?? "N/A";
+    final desc = plan["recharge_long_desc"] ?? "No details available";
+
     return Padding(
       padding: EdgeInsets.only(top: 550),
       child: Column(
@@ -48,7 +53,7 @@ class RechargeDetailScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CommonTextWidget.InterBold(
-                          text: "₹299",
+                          text: "₹$amount", // 👈 dynamic amount
                           fontSize: 20,
                           color: black171,
                         ),
@@ -58,19 +63,13 @@ class RechargeDetailScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               CommonTextWidget.InterMedium(
-                                text: "Validity: 28 Days",
-                                fontSize: 14,
-                                color: black171,
-                              ),
-                              SizedBox(height: 2),
-                              CommonTextWidget.InterMedium(
-                                text: "Date: 1.5/Day",
+                                text: "Validity: $validity", // 👈 dynamic validity
                                 fontSize: 14,
                                 color: black171,
                               ),
                               SizedBox(height: 4),
                               CommonTextWidget.InterRegular(
-                                text: "Enjoy Unlimited calls on any network daily 1 GB & 100 SMS",
+                                text: desc, // 👈 dynamic description
                                 fontSize: 12,
                                 color: grey757,
                               ),

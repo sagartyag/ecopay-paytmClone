@@ -7,6 +7,8 @@ import 'package:digitalwalletpaytmcloneapp/Utils/common_text_widget.dart';
 import 'package:digitalwalletpaytmcloneapp/Utils/common_textfeild_widget.dart';
 import 'package:digitalwalletpaytmcloneapp/Service/Api.dart';
 import 'add_beneficiary_screen.dart';
+import 'otp_verification_screen.dart';
+
 class SelectBankScreen extends StatefulWidget {
   const SelectBankScreen({Key? key}) : super(key: key);
 
@@ -166,13 +168,45 @@ class _SelectBankScreenState extends State<SelectBankScreen> {
                             child: InkWell(
                               borderRadius: BorderRadius.circular(16),
                               
-                               onTap: () {
-                                  Get.to(() => AddBeneficiaryScreen(
-                                  bankId: bank['id'].toString(),
-                                  bankName: bank['name'],
-                                  ifsc: bank['ifsc'] ?? "",
-                                    ));
-                                  },
+                               onTap: () async {
+  try {
+    // 1️⃣ Call backend to check user status
+    final response = await ApiService.get("/check-user-status");
+    final data = response.data;
+
+    if (data['success'] == true) {
+      final status = data['status'];   // active / inactive
+      final action = data['action'];   // PROCEED / KYC_REQUIRED / REGISTER_REQUIRED
+
+      if (status == "active" && action == "PROCEED") {
+        // ✅ User is active → go to Add Beneficiary screen
+        Get.to(() => AddBeneficiaryScreen(
+              bankId: bank['id'].toString(),
+              bankName: bank['name'],
+              ifsc: bank['ifsc'] ?? "",
+            ));
+      } else if (action == "KYC_REQUIRED") {
+        // ❌ User inactive → redirect to OTP/KYC screen
+        Get.to(() => OtpVerificationScreen(bankId: bank['id'].toString(),
+              bankName: bank['name'],
+              ifsc: bank['ifsc'] ?? "",));
+      } else if (action == "REGISTER_REQUIRED") {
+        // ❌ User not registered
+        Get.snackbar("Error",
+            "User not registered. Please complete registration.");
+      } else {
+        // ❌ Unexpected case
+        Get.snackbar("Error", data['message'] ?? "Unexpected status");
+      }
+    } else {
+      Get.snackbar("Error", data['message'] ?? "Failed to check status");
+    }
+  } catch (e) {
+    print("check-user-status error: $e");
+    Get.snackbar("Error", "Something went wrong while checking status");
+  }
+},
+
                               
                               child: Container(
                                 decoration: BoxDecoration(

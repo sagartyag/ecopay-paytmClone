@@ -35,21 +35,24 @@ class _ShowBeneficiaryState extends State<ShowBeneficiary> {
 
   Future<void> fetchBanks() async {
     try {
-      final response = await ApiService.get("/get-banks");
+      final response = await ApiService.get("/get-beneficiary-details");
+      print(response);
       final data = response.data;
 
-      if (data['success'] == true && data['banks'] != null) {
-        setState(() {
-          banks = data['banks'];
-          filteredBanks = data['banks'];
-          isLoading = false;
-        });
+      if (data['success'] == true ) {
+         Get.snackbar("Success", "Fetched banks successfully");
+        // setState(() {
+        //   banks = data['banks'];
+        //   filteredBanks = data['banks'];
+        //   isLoading = false;
+        // });
       } else {
         setState(() => isLoading = false);
         Get.snackbar("Error", "Failed to fetch banks");
       }
     } catch (e) {
       setState(() => isLoading = false);
+      print(e);
       Get.snackbar("Error", "Failed to fetch banks");
     }
   }

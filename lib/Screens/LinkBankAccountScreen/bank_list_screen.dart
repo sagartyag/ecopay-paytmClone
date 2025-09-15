@@ -37,7 +37,7 @@ class _SelectBankScreenState extends State<SelectBankScreen> {
     try {
       final response = await ApiService.get("/get-banks");
       final data = response.data;
-
+      print("Fetched banks: $data");
       if (data['success'] == true && data['banks'] != null) {
         setState(() {
           banks = data['banks'];
@@ -181,13 +181,13 @@ class _SelectBankScreenState extends State<SelectBankScreen> {
       if (status == "active" && action == "PROCEED") {
         // ✅ User is active → go to Add Beneficiary screen
         Get.to(() => AddBeneficiaryScreen(
-              bankId: bank['id'].toString(),
+              bankId: bank['bank_id'].toString(),
               bankName: bank['name'],
               ifsc: bank['ifsc'] ?? "",
             ));
       } else if (action == "KYC_REQUIRED") {
         // ❌ User inactive → redirect to OTP/KYC screen
-        Get.to(() => OtpVerificationScreen(bankId: bank['id'].toString(),
+        Get.to(() => OtpVerificationScreen(bankId: bank['bank_id'].toString(),
               bankName: bank['name'],
               ifsc: bank['ifsc'] ?? "",));
       } else if (action == "REGISTER_REQUIRED") {

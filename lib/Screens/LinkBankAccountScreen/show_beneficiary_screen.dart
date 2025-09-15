@@ -8,8 +8,7 @@ import 'package:digitalwalletpaytmcloneapp/Utils/common_textfeild_widget.dart';
 import 'package:digitalwalletpaytmcloneapp/Service/Api.dart';
 import 'add_beneficiary_screen.dart';
 import 'bank_list_screen.dart';
- // Import dummy screen
-
+import 'payment_amount_screen.dart';
 class ShowBeneficiary extends StatefulWidget {
   const ShowBeneficiary({Key? key}) : super(key: key);
 
@@ -20,50 +19,63 @@ class ShowBeneficiary extends StatefulWidget {
 class _ShowBeneficiaryState extends State<ShowBeneficiary> {
   final TextEditingController searchController = TextEditingController();
   bool isLoading = true;
-  List<dynamic> banks = [];
-  List<dynamic> filteredBanks = [];
+
+  List<dynamic> beneficiaries = [];
+  List<dynamic> filteredBeneficiaries = [];
 
   @override
   void initState() {
     super.initState();
-    fetchBanks();
+    fetchBeneficiaries();
 
     searchController.addListener(() {
-      filterBanks(searchController.text);
+      filterBeneficiaries(searchController.text);
     });
   }
 
-  Future<void> fetchBanks() async {
+  Future<void> fetchBeneficiaries() async {
     try {
       final response = await ApiService.get("/get-beneficiary-details");
       print(response);
+
       final data = response.data;
 
-      if (data['success'] == true ) {
-         Get.snackbar("Success", "Fetched banks successfully");
-        // setState(() {
-        //   banks = data['banks'];
-        //   filteredBanks = data['banks'];
-        //   isLoading = false;
-        // });
+      if (data['success'] == true && data['data'] != null) {
+        setState(() {
+          beneficiaries = data['data'];
+          filteredBeneficiaries = beneficiaries;
+          isLoading = false;
+        });
       } else {
         setState(() => isLoading = false);
-        Get.snackbar("Error", "Failed to fetch banks");
+        Get.snackbar("Error", "No beneficiaries found");
       }
     } catch (e) {
       setState(() => isLoading = false);
-      print(e);
-      Get.snackbar("Error", "Failed to fetch banks");
+      print("Error: $e");
+      Get.snackbar("Error", "Failed to fetch beneficiaries");
     }
   }
 
-  void filterBanks(String query) {
+  void proceedToPayment(dynamic beneficiary) {
+    Get.to(() => PaymentScreen(beneficiary: beneficiary));
+   
+  }
+
+  String maskAccountNumber(String? accountNo) {
+  if (accountNo == null || accountNo.length <= 7) return accountNo ?? '';
+  String masked = '*' * 7; // 7 asterisks
+  String lastDigits = accountNo.substring(7); // show from 8th char
+  return masked + lastDigits;
+}
+
+  void filterBeneficiaries(String query) {
     if (query.isEmpty) {
-      setState(() => filteredBanks = banks);
+      setState(() => filteredBeneficiaries = beneficiaries);
     } else {
       setState(() {
-        filteredBanks = banks
-            .where((bank) => bank['name']
+        filteredBeneficiaries = beneficiaries
+            .where((b) => b['benemobile']
                 .toString()
                 .toLowerCase()
                 .contains(query.toLowerCase()))
@@ -104,7 +116,7 @@ class _ShowBeneficiaryState extends State<ShowBeneficiary> {
                     SizedBox(width: 20),
                     Expanded(
                       child: CommonTextWidget.InterSemiBold(
-                        text: "Beneficiary",
+                        text: "Beneficiaries",
                         fontSize: 20,
                         color: white,
                       ),
@@ -142,69 +154,61 @@ class _ShowBeneficiaryState extends State<ShowBeneficiary> {
                   padding: EdgeInsets.all(15),
                   child: SvgPicture.asset(Images.search, color: Colors.green),
                 ),
-                hintText: "Search Bank",
+                hintText: "Search phone number",
               ),
             ),
           ),
 
-          // 🌟 List of banks
+          // 🌟 List of Beneficiaries
           Expanded(
             child: isLoading
                 ? Center(child: CircularProgressIndicator(color: Colors.green))
-                : filteredBanks.isEmpty
+                : filteredBeneficiaries.isEmpty
                     ? Center(
                         child: CommonTextWidget.InterMedium(
-                          text: "No banks found",
+                          text: "No beneficiaries found",
                           fontSize: 16,
                           color: grey757,
                         ),
                       )
                     : ListView.builder(
                         physics: BouncingScrollPhysics(),
-                        itemCount: filteredBanks.length,
+                        itemCount: filteredBeneficiaries.length,
                         padding: EdgeInsets.symmetric(horizontal: 20),
                         itemBuilder: (context, index) {
-                          final bank = filteredBanks[index];
+                          final b = filteredBeneficiaries[index];
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 14),
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(16),
-                              onTap: () {
-                                Get.to(() => AddBeneficiaryScreen(
-                                      bankId: bank['id'].toString(),
-                                      bankName: bank['name'],
-                                      ifsc: bank['ifsc'] ?? "",
-                                    ));
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(16),
-                                  color: white,
-                                  border: Border.all(color: greyE5E, width: 1),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.05),
-                                      blurRadius: 4,
-                                      offset: Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: ListTile(
-                                  leading: CircleAvatar(
-                                    backgroundColor:
-                                        Colors.green.withOpacity(0.1),
-                                    child: Icon(Icons.account_balance,
-                                        color: Colors.green),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                color: white,
+                                border: Border.all(color: greyE5E, width: 1),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 4,
+                                    offset: Offset(0, 2),
                                   ),
-                                  title: CommonTextWidget.InterSemiBold(
-                                    text: bank['name'] ?? "",
-                                    fontSize: 16,
-                                    color: black171,
-                                  ),
-                                  subtitle: Text(bank['ifsc'] ?? ""),
-                                  trailing: Icon(Icons.arrow_forward_ios,
-                                      size: 16, color: Colors.green),
+                                ],
+                              ),
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  backgroundColor:
+                                      Colors.green.withOpacity(0.1),
+                                  child: Icon(Icons.person, color: Colors.green),
                                 ),
+                                title: CommonTextWidget.InterSemiBold(
+                                  text: b['name'] ?? "",
+                                  fontSize: 16,
+                                  color: black171,
+                                ),
+                                subtitle: Text(
+                                  "${maskAccountNumber(b['account_no'] ?? '')}",
+                                ),
+                                trailing: Icon(Icons.arrow_forward_ios,
+                                    size: 16, color: Colors.green),
+                                onTap: () => proceedToPayment(b),
                               ),
                             ),
                           );
@@ -214,13 +218,13 @@ class _ShowBeneficiaryState extends State<ShowBeneficiary> {
         ],
       ),
 
-      // 🌟 Floating button to show Beneficiaries
+      // 🌟 Floating button → Add new Beneficiary
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.green,
         onPressed: () {
-          Get.to(() => SelectBankScreen()); // Open dummy beneficiaries screen
+          Get.to(() => SelectBankScreen());
         },
-        child: Icon(Icons.people, color: white),
+        child: Icon(Icons.add, color: white),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );

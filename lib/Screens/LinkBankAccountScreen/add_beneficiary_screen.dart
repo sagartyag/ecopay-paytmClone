@@ -49,8 +49,9 @@ try {
     "/add-beneficiary",
     {
       "MobileNo": mobileController.text.trim(),
-      "CustomerMobileNo": customerMobileController.text.trim(),
+      // "CustomerMobileNo": customerMobileController.text.trim(),
       "BankId": widget.bankId,
+      "BankName": widget.bankName,    
       "AccountNo": accountNoController.text.trim(),
       "IFSC": ifscController.text.trim(),
       "Name": nameController.text.trim(),
@@ -141,14 +142,14 @@ try {
                     SizedBox(height: 16),
 
                     // Customer Mobile No
-                    CommonTextFieldWidget.TextFormField2(
-                      controller: customerMobileController,
-                      keyboardType: TextInputType.phone,
-                      hintText: "Customer Mobile Number",
-                      validator: (v) =>
-                          v!.isEmpty ? "Enter customer mobile no" : null,
-                    ),
-                    SizedBox(height: 16),
+                    // CommonTextFieldWidget.TextFormField2(
+                    //   controller: customerMobileController,
+                    //   keyboardType: TextInputType.phone,
+                    //   hintText: "Customer Mobile Number",
+                    //   validator: (v) =>
+                    //       v!.isEmpty ? "Enter customer mobile no" : null,
+                    // ),
+                    // SizedBox(height: 16),
 
                     // Account No
                     CommonTextFieldWidget.TextFormField2(

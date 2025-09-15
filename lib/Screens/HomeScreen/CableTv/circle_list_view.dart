@@ -7,35 +7,28 @@ import 'package:digitalwalletpaytmcloneapp/Service/Api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/CableTv/cable_screen.dart';
 
-class SelectYourCircleScreen extends StatefulWidget {
-  const SelectYourCircleScreen({Key? key}) : super(key: key);
+class SelectYourCircle extends StatefulWidget {
+  const SelectYourCircle({Key? key}) : super(key: key);
 
   @override
-  State<SelectYourCircleScreen> createState() => _SelectYourCircleScreenState();
+  State<SelectYourCircle> createState() => SelectYourCircleState();
 }
 
-class _SelectYourCircleScreenState extends State<SelectYourCircleScreen> {
+class SelectYourCircleState extends State<SelectYourCircle> {
   final TextEditingController searchController = TextEditingController();
   
   bool isLoading = true;
   List<dynamic> circles = [];
   List<dynamic> filteredCircles = [];
 
-  late String operatorCode;
-  late String phone;
-  late String operatorName;
+ 
 
   @override
   void initState() {
-    super.initState();
-
-    // 👇 Arguments from previous screen
-    final args = Get.arguments as Map<String, dynamic>;
-    operatorCode = args['operator'] ?? "";
-    phone = args['phone'] ?? "";
-    operatorName = args['operatorName'] ?? "";
-
+    super.initState();   
+    
     fetchCircles();
     searchController.addListener(_filterCircles);
   }
@@ -89,6 +82,7 @@ class _SelectYourCircleScreenState extends State<SelectYourCircleScreen> {
             child: SvgPicture.asset(Images.information,color: Colors.green),
           ),
         ],
+        
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 22),
@@ -130,11 +124,9 @@ class _SelectYourCircleScreenState extends State<SelectYourCircleScreen> {
                           child: InkWell(
                             onTap: () {
                               // 👇 Just pass parameters to next screen
-                              Get.to(() => PrepaidOperatorDetailScreen(),
+                              Get.to(() => SelectCableScreen(),
                                   arguments: {
-                                    "operator": operatorCode,
-                                    "operatorName": operatorName,
-                                    "phone": phone,
+                                  
                                     "circle": circle['code'],
                                   });
                             },

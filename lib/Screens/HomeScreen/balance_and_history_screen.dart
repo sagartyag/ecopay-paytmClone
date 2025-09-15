@@ -19,11 +19,14 @@ class BalanceAndHistoryScreen extends StatefulWidget {
 class _BalanceAndHistoryScreenState extends State<BalanceAndHistoryScreen> {
   double totalBalance = 0.0; // API se aane wala balance
   bool isLoading = true;
+  List<dynamic> transactionHistoryList = []; // ✅ API se aane wala data
 
   @override
   void initState() {
     super.initState();
     fetchBalance();
+    fetchTransactionHistory(); // ✅ Screen open hote hi call hoga
+
   }
 
   /// 🔹 API call to get balance
@@ -53,6 +56,22 @@ class _BalanceAndHistoryScreenState extends State<BalanceAndHistoryScreen> {
       });
     }
   }
+
+void fetchTransactionHistory() async {
+  try {
+    final response = await ApiService.get("/transaction-history");
+    print("Transaction History Response: ${response.data}");
+
+    final data = response.data;
+    setState(() {
+      transactionHistoryList = data["transactions"] ?? [];
+      isLoading = false;
+    });
+  } catch (e) {
+    print("Error fetching transaction history: $e");
+    setState(() => isLoading = false);
+  }
+}
 
 Widget _buildActionButton(IconData icon, String label) {
   return Column(
@@ -268,143 +287,76 @@ Container(
                   ],
                 ),
                 SizedBox(height: 20),
-                ListView.builder(
-                  shrinkWrap: true,
-                  padding: EdgeInsets.zero,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: Lists.accountBalanceTransactionHistoryList.length,
-                  itemBuilder: (context, index) => Padding(
-                    padding: EdgeInsets.only(bottom: 15),
-                    child: Column(
+        isLoading
+    ? Center(child: CircularProgressIndicator())
+    : ListView.builder(
+        shrinkWrap: true,
+        padding: EdgeInsets.zero,
+        physics: NeverScrollableScrollPhysics(),
+        itemCount: transactionHistoryList.length,
+        itemBuilder: (context, index) {
+          final tx = transactionHistoryList[index];
+          return Padding(
+            padding: EdgeInsets.only(bottom: 8), // 🔥 pehle 15 tha, ab 8 kiya
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.account_balance_wallet, // Aapka icon
+                      color: Colors.green,
+                      size: 40, // 🔥 thoda chhota kiya (pehle 45 tha)
+                    ),
+                    SizedBox(width: 10), // 🔥 pehle 15 tha, ab 10 kiya
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        CommonTextWidget.InterBold(
+                          text: tx["remark"] ?? "No Remark",
+                          fontSize: 15,
+                          color: black171,
+                        ),
+                        SizedBox(height: 2), // 🔥 pehle 4 tha, ab 2 kiya
+                        CommonTextWidget.InterMedium(
+                          text: tx["ttime"] ?? "",
+                          fontSize: 12,
+                          color: grey757,
+                        ),
+                        SizedBox(height: 2), // 🔥 pehle 4 tha, ab 2 kiya
                         Row(
                           children: [
-                            Image.asset(
-                                Lists.accountBalanceTransactionHistoryList[
-                                    index]["image"],
-                                height: 45,
-                                width: 45),
-                            SizedBox(width: 15),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CommonTextWidget.InterSemiBold(
-                                  text: Lists
-                                          .accountBalanceTransactionHistoryList[
-                                      index]["text1"],
-                                  fontSize: 15,
-                                  color: black171,
-                                ),
-                                SizedBox(height: 4),
-                                CommonTextWidget.InterMedium(
-                                  text: "Yesterday, 03:36 PM",
-                                  fontSize: 12,
-                                  color: grey757,
-                                ),
-                                SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    CommonTextWidget.InterMedium(
-                                      text: "Sent From",
-                                      fontSize: 12,
-                                      color: grey757,
-                                    ),
-                                  SvgPicture.asset(Images.bobImge),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            Expanded(
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: CommonTextWidget.InterBold(
-                                  text: Lists
-                                          .accountBalanceTransactionHistoryList[
-                                      index]["text2"],
-                                  fontSize: 14,
-                                  color: index == 1 ? green2CA : redE50,
-                                ),
-                              ),
+                            CommonTextWidget.InterMedium(
+                              text: " ${tx["status"] ?? "Pending"}",
+                              fontSize: 12,
+                              color: grey757,
                             ),
                           ],
                         ),
-                        SizedBox(height: 15),
-                        Divider(color: greyF3F, thickness: 1),
                       ],
                     ),
-                  ),
-                ),
-                SizedBox(height: 5),
-                CommonTextWidget.InterBold(
-                  text: "Yesterday, Dec 28",
-                  fontSize: 14,
-                  color: grey6B7,
-                ),
-                SizedBox(height: 15),
-                ListView.builder(
-                  shrinkWrap: true,
-                  padding: EdgeInsets.zero,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: Lists.accountBalanceYesterdayHistoryList.length,
-                  itemBuilder: (context, index) => Padding(
-                    padding: EdgeInsets.only(bottom: 15),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Image.asset(
-                                Lists.accountBalanceYesterdayHistoryList[
-                                index]["image"],
-                                height: 45,
-                                width: 45),
-                            SizedBox(width: 15),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CommonTextWidget.InterSemiBold(
-                                  text: Lists
-                                      .accountBalanceYesterdayHistoryList[
-                                  index]["text"],
-                                  fontSize: 15,
-                                  color: black171,
-                                ),
-                                SizedBox(height: 4),
-                                CommonTextWidget.InterMedium(
-                                  text: "Yesterday, 03:36 PM",
-                                  fontSize: 12,
-                                  color: grey757,
-                                ),
-                                SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    CommonTextWidget.InterMedium(
-                                      text: "Sent From",
-                                      fontSize: 12,
-                                      color: grey757,
-                                    ),
-                                  SvgPicture.asset(Images.bobImge),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            Expanded(
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: CommonTextWidget.InterBold(
-                                  text:"- ₹,1000",
-                                  fontSize: 14,
-                                  color:grey757,
-                                ),
-                              ),
-                            ),
-                          ],
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: CommonTextWidget.InterBold(
+                          text: "-₹${tx["amount"] ?? 0}",
+                          fontSize: 14,
+                          color: tx["status"] == "Success"
+                              ? green2CA
+                              : redE50,
                         ),
-                        SizedBox(height: 15),
-                        Divider(color: greyF3F, thickness: 1),
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
+                SizedBox(height: 8), // 🔥 pehle 15 tha, ab 8 kiya
+                Divider(color: greyF3F, thickness: 1),
+              ],
+            ),
+          );
+        },
+      ),
+ 
+             
               ],
             ),
           ),

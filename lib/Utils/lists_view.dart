@@ -44,6 +44,7 @@ import 'package:digitalwalletpaytmcloneapp/Screens/ScannerScreen/scanner_screen.
 import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/CableTv/cable_screen.dart';
 import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/MunicipalTax/municipal_screen.dart';
 import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/Donation/donation_screen.dart';
+import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/CableTv/circle_list_view.dart';
 
 
 
@@ -125,7 +126,7 @@ class Lists {
       "image": Images.rentViaCreditCard,
       "text": "Cable TV",
         "onTap": () {
-        Get.to(() => SelectCableScreen());
+        Get.to(() => SelectYourCircle());
       },
     },
     {
@@ -305,7 +306,7 @@ class Lists {
       "image": Images.rentViaCreditCard,
       "text": "Cable TV",
         "onTap": () {
-        Get.to(() => SelectCableScreen());
+        Get.to(() => SelectYourCircle());
       },
     },
     {

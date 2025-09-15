@@ -252,12 +252,12 @@ isLoading
   ),
   trailing: Icon(Icons.arrow_forward_ios, size: 14, color: Colors.green),
   onTap: () {
-    // Go to operator selection screen
-    Get.to(() => SelectYourPrepaidOperatorScreen(), arguments: {
-      "name":  "Unknown",
-      "phone": enterNumberController.text.trim().isNotEmpty,
-    });
-  },
+  Get.to(() => SelectYourPrepaidOperatorScreen(), arguments: {
+    "name": "Unknown",
+    "phone": enterNumberController.text.trim(), // ✅ String pass kiya
+  });
+},
+
 ),
 
               ),

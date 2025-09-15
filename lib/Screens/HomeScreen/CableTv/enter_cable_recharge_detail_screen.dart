@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:digitalwalletpaytmcloneapp/Service/Api.dart';
 import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/CableTv/dth_plan_screen.dart';
 
 class EnterCableRechargeDetailScreen extends StatelessWidget {
@@ -8,40 +7,12 @@ class EnterCableRechargeDetailScreen extends StatelessWidget {
 
   final TextEditingController numberController = TextEditingController();
 
-  /// 👉 Backend से DTH Plans fetch करने का function
-  Future<void> fetchDthPlan(String operator, String mobile, BuildContext context) async {
-    try {
-      final response = await ApiService.post(
-        "/dth-plans", // केवल endpoint, baseUrl ApiService में पहले से है
-        {
-          "operator": operator,
-          "mobile": mobile,
-        },
-      );
-
-      final data = response.data;
-        print("data sagar: $data");
-      if (data["success"] == true) {
-        final plans = data["data"]["records"] ?? [];
-
-        // ✅ Plans Screen पर navigate
-        Get.to(() => DthPlansScreen(), arguments: {
-          "operator": operator,
-          "mobile": mobile,
-          "plans": plans,
-        });
-      } else {
-        Get.snackbar("Error", data["message"] ?? "No plans found");
-      }
-    } catch (e) {
-      Get.snackbar("Error", "Something went wrong: $e");
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final args = Get.arguments ?? {};
-    final operatorName = args["operatorName"] ?? "Unknown Operator";
+    final operatorCode = args["operatorCode"] ?? "Unknown";
+    final circleCode = args["circleCode"] ?? "Unknown";
+    final operatorName = args["operatorName"] ?? "Unknown";
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -51,48 +22,107 @@ class EnterCableRechargeDetailScreen extends StatelessWidget {
         elevation: 0,
         leading: InkWell(
           onTap: () => Get.back(),
-          child: Icon(Icons.arrow_back, size: 20, color: Colors.black),
+          child: const Icon(Icons.arrow_back, size: 20, color: Colors.black),
         ),
-        title: Text(
-          "Cable TV Recharge",
+        title: const Text(
+          "Recharge DTH or TV",
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 22),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 20),
-            Text("Enter Details", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-            SizedBox(height: 25),
+            const SizedBox(height: 15),
 
-            // ✅ Operator Name
-            Text(operatorName, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black)),
-            SizedBox(height: 20),
+            // 🔰 Operator Card (Paytm style)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.green.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.tv, color: Colors.green, size: 22),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      operatorName,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Get.back(); // User ko operator change karne ke liye pichhe bhej sakte ho
+                    },
+                    child: const Text(
+                      "Change",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
 
-            // ✅ Customer ID Field
-            Text("Mobile Number", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-            SizedBox(height: 10),
+            const SizedBox(height: 20),
+
+            // 🔰 Input Field (Paytm style)
             TextFormField(
               controller: numberController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                hintText: "Enter Mobile Number",
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+                hintText: "Registered Mobile No / Viewing Card Number",
+                filled: true,
+                fillColor: Colors.grey.shade100,
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey.shade300),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey.shade300),
+                ),
+                suffixIcon: const Icon(Icons.contact_page_outlined,
+                    color: Colors.grey),
               ),
             ),
 
-            Spacer(),
+            const SizedBox(height: 8),
+            const Text(
+              "Enter your Registered Mobile Number or 11 digit Viewing Card Number starting with 0.",
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
 
-            // ✅ Proceed Button
+            const Spacer(),
+
+            // 🔰 Proceed Button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
-                  padding: EdgeInsets.symmetric(vertical: 14),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -100,15 +130,28 @@ class EnterCableRechargeDetailScreen extends StatelessWidget {
                 onPressed: () {
                   final mobile = numberController.text.trim();
                   if (mobile.isEmpty) {
-                    Get.snackbar("Error", "Please enter Customer ID");
+                    Get.snackbar("Error", "Please enter mobile number");
                     return;
                   }
-                  fetchDthPlan(operatorName, mobile, context);
+
+                  Get.to(() => DthPlansScreen(), arguments: {
+                    "operatorCode": operatorCode,
+                    "circleCode": circleCode,
+                    "mobileNumber": mobile,
+                   "operatorName": operatorName,
+
+                  });
                 },
-                child: Text("Proceed", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                child: const Text(
+                  "Proceed",
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
               ),
             ),
-            SizedBox(height: 45),
+            const SizedBox(height: 30),
           ],
         ),
       ),

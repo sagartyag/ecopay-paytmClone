@@ -77,7 +77,7 @@ class _SelectYourPrepaidOperatorScreenState
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 25),
-            child: SvgPicture.asset(Images.information),
+            child: SvgPicture.asset(Images.information,color: Colors.green),
           ),
         ],
       ),
@@ -111,6 +111,7 @@ class _SelectYourPrepaidOperatorScreenState
                                 Get.to(() => SelectYourCircleScreen(),
                                     arguments: {
                                      "operator": operator['code'], 
+                                     "operatorName": operator['name'], 
                                       "phone": phoneNumber,
                                     });
                               },

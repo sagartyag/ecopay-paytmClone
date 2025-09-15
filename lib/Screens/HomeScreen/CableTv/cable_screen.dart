@@ -5,7 +5,6 @@ import 'package:digitalwalletpaytmcloneapp/Utils/common_text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/CableTv/cable_list_view.dart';
 import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/CableTv/enter_cable_recharge_detail_screen.dart';
 
 class SelectCableScreen extends StatefulWidget {
@@ -21,9 +20,16 @@ class _SelectCableScreenState extends State<SelectCableScreen> {
   List<dynamic> filteredOperators = [];
   final TextEditingController searchController = TextEditingController();
 
+  /// ✅ Added missing field
+  String? circle;
+
   @override
   void initState() {
     super.initState();
+    final args = Get.arguments;
+    if (args != null && args is Map && args.containsKey("circle")) {
+      circle = args["circle"];
+    }
     fetchOperators();
     searchController.addListener(_filterOperators);
   }
@@ -33,8 +39,7 @@ class _SelectCableScreenState extends State<SelectCableScreen> {
     final query = searchController.text.toLowerCase();
     setState(() {
       filteredOperators = prepaidOperators
-          .where((op) =>
-              op['name'].toString().toLowerCase().contains(query))
+          .where((op) => op['name'].toString().toLowerCase().contains(query))
           .toList();
     });
   }
@@ -156,23 +161,27 @@ class _SelectCableScreenState extends State<SelectCableScreen> {
                       itemBuilder: (context, index) {
                         final operator = filteredOperators[index];
                         return InkWell(
-                         onTap: () {
-  print("Selected Operator: ${operator['name']}");
+                          onTap: () {
+                            print("Selected Operator: ${operator['name']}");
+                            print("Selected Circle: $circle");
 
-  // 👉 Next page navigate with arguments
-  Get.to(() => EnterCableRechargeDetailScreen(), arguments: {
-    "operatorName": operator['code'],
-  });
-},
+                           Get.to(() => EnterCableRechargeDetailScreen(),
+  arguments: {
+    "operatorCode": operator['code'] ?? "",
+        "operatorName": operator['name'] ?? "",
 
+    "circleCode": circle ?? "",
+  },
+);
+
+                          },
                           child: Container(
                             margin: const EdgeInsets.only(bottom: 12),
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
-                              border:
-                                  Border.all(color: Colors.grey.shade300),
+                              border: Border.all(color: Colors.grey.shade300),
                             ),
                             child: Row(
                               children: [

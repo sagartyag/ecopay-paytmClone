@@ -26,6 +26,7 @@ class _PrepaidOperatorDetailScreenState
   Map<String, List<dynamic>> groupedPlans = {};
   List<String> rechargeTypes = [];
   bool isLoading = true;
+  late String operatorCode;
 
   late String operatorName;
   late String phone;
@@ -36,9 +37,10 @@ class _PrepaidOperatorDetailScreenState
     super.initState();
 
     final args = Get.arguments as Map<String, dynamic>? ?? {};
-    operatorName = args["operator"] ?? "";
+    operatorCode = args["operator"] ?? "";
     phone = args["phone"] ?? "";
     circle = args["circle"] ?? "";
+    operatorName = args["operatorName"] ?? "";
 
     fetchPlans();
   }
@@ -46,18 +48,21 @@ class _PrepaidOperatorDetailScreenState
   Future<void> fetchPlans() async {
     try {
       final response = await ApiService.post("/recharge-plans", {
-        "operator": operatorName,
+        "operator": operatorCode,
         "phone": phone,
         "circle": circle,
       });
 
       final data = response.data;
+        print("👉 recharge type: $data");
+
       if (data['success'] == true) {
         final List<dynamic> plans = data['apiData']['PlanDescription'] ?? [];
-
+            
         // 🔹 Group by recharge_type
         for (var plan in plans) {
           final type = plan["recharge_type"] ?? "Other";
+
           if (!groupedPlans.containsKey(type)) {
             groupedPlans[type] = [];
           }
@@ -92,119 +97,136 @@ class _PrepaidOperatorDetailScreenState
           onTap: () => Get.back(),
           child: Icon(Icons.arrow_back, size: 20, color: black171),
         ),
-        title: SvgPicture.asset(Images.viPrepaidTitleImage),
-      ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator(color: Colors.green))
-          : Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 22, vertical: 10),
-                  child: CommonTextFieldWidget.TextFormField2(
-                    prefixIcon: Padding(
-                      padding: EdgeInsets.all(15),
-                      child: SvgPicture.asset(Images.search, color: Colors.green),
-                    ),
-                    keyboardType: TextInputType.text,
-                    hintText: "Search Plan",
-                    controller: searchController,
+  title: Text(
+    operatorName, 
+    style: TextStyle(
+      color: black171,
+      fontWeight: FontWeight.w600,
+      fontSize: 18,
+    ),
+  ),      ),
+     body: isLoading
+    ? const Center(child: CircularProgressIndicator(color: Colors.green))
+    : rechargeTypes.isEmpty
+        ? Center(
+            child: CommonTextWidget.InterMedium(
+              text: "No Plans Available",
+              fontSize: 16,
+              color: grey757,
+            ),
+          )
+        : Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 22, vertical: 10),
+                child: CommonTextFieldWidget.TextFormField2(
+                  prefixIcon: Padding(
+                    padding: EdgeInsets.all(15),
+                    child: SvgPicture.asset(Images.search, color: Colors.green),
                   ),
+                  keyboardType: TextInputType.text,
+                  hintText: "Search Plan",
+                  controller: searchController,
                 ),
+              ),
 
-                // 🔹 TabBar
-                TabBar(
-                  isScrollable: true,
+            
+              TabBar(
+                isScrollable: true,
+                controller: tabController,
+                labelColor: black171,
+                unselectedLabelColor: grey757,
+                indicatorColor: Colors.green,
+                indicatorWeight: 2,
+                tabs: rechargeTypes.map((type) => Tab(text: type)).toList(),
+              ),
+
+              Expanded(
+                child: TabBarView(
                   controller: tabController,
-                  labelColor: black171,
-                  unselectedLabelColor: grey757,
-                  indicatorColor: Colors.green,
-                  indicatorWeight: 2,
-                  tabs: rechargeTypes.map((type) => Tab(text: type)).toList(),
-                ),
+                  children: rechargeTypes.map((type) {
+                    final plans = groupedPlans[type] ?? [];
+                    if (plans.isEmpty) {
+                      return Center(
+                        child: CommonTextWidget.InterMedium(
+                          text: "No Plans Available",
+                          fontSize: 16,
+                          color: grey757,
+                        ),
+                      );
+                    }
+                    return ListView.builder(
+                      padding: EdgeInsets.all(16),
+                      itemCount: plans.length,
+                      itemBuilder: (context, index) {
+                        final plan = plans[index];
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: 15),
+                          child: InkWell(
+                            onTap: () {
+                              Get.to(() => PrepaidOperatorPaymentScreen(),
+                                  arguments: {
+                                    "plan": plan,
+                                    "operator": operatorCode,
+                                    "phone": phone,
+                                    "circle": circle,
+                                     "operatorName": operatorName,
 
-                Expanded(
-                  child: TabBarView(
-                    controller: tabController,
-                    children: rechargeTypes.map((type) {
-                      final plans = groupedPlans[type] ?? [];
-                      if (plans.isEmpty) {
-                        return Center(
-                          child: CommonTextWidget.InterMedium(
-                            text: "No Plans Available",
-                            fontSize: 16,
-                            color: grey757,
+                                  });
+                            },
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CommonTextWidget.InterSemiBold(
+                                  text:
+                                      "₹${plan['recharge_amount'] ?? ''}",
+                                  fontSize: 20,
+                                  color: black171,
+                                ),
+                                SizedBox(width: 15),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      CommonTextWidget.InterMedium(
+                                        text:
+                                            "Validity: ${plan['recharge_validity'] ?? 'N/A'}",
+                                        fontSize: 14,
+                                        color: black171,
+                                      ),
+                                      SizedBox(height: 5),
+                                      Text(
+                                        plan['recharge_short_desc'] ??
+                                            plan['recharge_long_desc'] ??
+                                            "",
+                                        style: TextStyle(
+                                          fontFamily:
+                                              FontFamily.InterRegular,
+                                          fontSize: 12,
+                                          color: grey757,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Align(
+                                  alignment: Alignment.topRight,
+                                  child: Icon(Icons.arrow_forward_ios,
+                                      color: grey757, size: 18),
+                                ),
+                              ],
+                            ),
                           ),
                         );
-                      }
-                      return ListView.builder(
-                        padding: EdgeInsets.all(16),
-                        itemCount: plans.length,
-                        itemBuilder: (context, index) {
-                          final plan = plans[index];
-                          return Padding(
-                            padding: EdgeInsets.only(bottom: 15),
-                            child: InkWell(
-                              onTap: () {
-                            Get.to(() => PrepaidOperatorPaymentScreen(),
-                                 arguments: {
-                                    "plan": plan,
-                                    "operator": operatorName,
-                                    "phone": phone,
-                                   "circle": circle,
-                                      });
+                      },
+                    );
+                  }).toList(),
+                ),
+              )
+            ],
+          ),
 
-                              },
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CommonTextWidget.InterSemiBold(
-                                    text: "₹${plan['recharge_amount'] ?? ''}",
-                                    fontSize: 20,
-                                    color: black171,
-                                  ),
-                                  SizedBox(width: 15),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        CommonTextWidget.InterMedium(
-                                          text:
-                                              "Validity: ${plan['recharge_validity'] ?? 'N/A'}",
-                                          fontSize: 14,
-                                          color: black171,
-                                        ),
-                                        SizedBox(height: 5),
-                                        Text(
-                                          plan['recharge_short_desc'] ??
-                                              plan['recharge_long_desc'] ??
-                                              "",
-                                          style: TextStyle(
-                                            fontFamily:
-                                                FontFamily.InterRegular,
-                                            fontSize: 12,
-                                            color: grey757,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Align(
-                                    alignment: Alignment.topRight,
-                                    child: Icon(Icons.arrow_forward_ios,
-                                        color: grey757, size: 18),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    }).toList(),
-                  ),
-                )
-              ],
-            ),
     );
   }
 }

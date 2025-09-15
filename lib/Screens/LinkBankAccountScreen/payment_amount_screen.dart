@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:digitalwalletpaytmcloneapp/Service/Api.dart';
-
+import 'package:intl/intl.dart';
+import 'dart:async';
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({Key? key, required this.beneficiary}) : super(key: key);
 
@@ -22,20 +23,31 @@ class _PaymentScreenState extends State<PaymentScreen> {
     "BENEFICIARYID": "BEN123456"
   };
 
-  final List<Map<String, dynamic>> messages = [
-    {
-      "amount": 500,
-      "type": "sent",
-      "status": "Sent to Bank A/c",
-      "timestamp": "05 Jan 2025 • 5:55 PM"
-    },
-    {
-      "amount": 500,
-      "type": "sent",
-      "status": "Received in 🏦 Bank",
-      "timestamp": "09 Jan 2025 • 8:54 PM"
-    },
-  ];
+ final List<Map<String, dynamic>> messages = [];
+
+
+
+Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    // Call immediately when screen opens
+    checkAndFetchTransactions();
+
+    // Schedule every 1 minute
+    _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      if (mounted) {
+        checkAndFetchTransactions();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // cancel the timer when screen is closed
+    super.dispose();
+  }
 
   final TextEditingController _amountController = TextEditingController();
  final TextEditingController amountController = TextEditingController();
@@ -198,6 +210,55 @@ void showPaymentBottomSheet(String amount) {
       );
     }
   }
+
+
+   Future<void> checkAndFetchTransactions() async {
+    try {
+      // Call backend to update transaction status
+      final checkResponse = await ApiService.get("/check-transactions");
+      print("ita worked");
+      if (checkResponse.data['success'] == true) {
+        print("Checked pending transactions successfully.");
+      }
+
+      // Fetch transactions for the current beneficiary
+      await fetchTransactions();
+    } catch (e) {
+      print("Error checking and fetching transactions: $e");
+    }
+  }
+
+Future<void> fetchTransactions() async {
+  final b = widget.beneficiary;
+  try {
+    final response = await ApiService.get("/get-transactions");
+    final data = response.data;
+    print(data);
+
+    if (data['success'] == true) {
+      setState(() {
+        messages.clear();
+        for (var tx in data['transactions']) {
+          // ✅ Check if account number matches
+          print("Comparing ${tx['accountNo']} with ${b['account_no']}");
+          if (tx['accountNo'] == b['account_no']) {
+            messages.add({
+              "amount": tx['amount'],
+              "type": "sent",
+              "status": tx['status'] ?? "Pending",
+              "timestamp": tx['createdAt'],
+              "accountNo": tx['account_no'], // keep it for reference
+            });
+          }
+        }
+      });
+    }
+  } catch (e) {
+    print("Error fetching transactions: $e");
+  }
+}
+
+
   void _sendPayment() {
     if (_amountController.text.isEmpty) return;
 
@@ -214,6 +275,15 @@ void showPaymentBottomSheet(String amount) {
 
     _amountController.clear();
   }
+
+  String formatTimestamp(String rawDate) {
+  try {
+    DateTime date = DateTime.parse(rawDate); // e.g. "2025-01-05T17:55:00Z"
+    return DateFormat("dd MMM yyyy • h:mm a").format(date);
+  } catch (e) {
+    return rawDate; // fallback if parse fails
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -316,7 +386,7 @@ void showPaymentBottomSheet(String amount) {
 
         // Timestamp
         Text(
-          m['timestamp'],
+           formatTimestamp(m['timestamp']),
           style: const TextStyle(
             fontSize: 13,
             color: Colors.grey,
@@ -332,59 +402,73 @@ void showPaymentBottomSheet(String amount) {
           ),
 
           // Input + Button
-          Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            color: Colors.white,
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: amountController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      hintText: "Enter amount",
-                      filled: true,
-                      fillColor: Colors.grey[100],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                ElevatedButton.icon(
-                  onPressed: () {
-                  String amount = amountController.text.trim();
-                  if (amount.isEmpty || double.tryParse(amount) == null) {
-                    Get.snackbar("Error", "Enter a valid amount",
-                        backgroundColor: Colors.red.withOpacity(0.8),
-                        colorText: Colors.white);
-                    return;
-                  }
-                  showPaymentBottomSheet(amount);
-                },
-                  icon: const Icon(Icons.currency_rupee,
-                      color: Colors.white),
-                  label:isSubmitting
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                    "Pay",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                ),
-              ],
+         Container(
+  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+  color: Colors.white,
+  child: Row(
+    children: [
+      Expanded(
+        child: TextField(
+          controller: amountController,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            hintText: "Enter amount",
+            filled: true,
+            fillColor: Colors.grey[100],
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
             ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16),
           ),
+        ),
+      ),
+      const SizedBox(width: 12),
+      ElevatedButton.icon(
+        onPressed: isSubmitting
+            ? null // 🔒 disable button during submission
+            : () {
+                String amount = amountController.text.trim();
+                if (amount.isEmpty || double.tryParse(amount) == null) {
+                  Get.snackbar("Error", "Enter a valid amount",
+                      backgroundColor: Colors.red.withOpacity(0.8),
+                      colorText: Colors.white);
+                  return;
+                }
+                showPaymentBottomSheet(amount);
+              },
+        icon: isSubmitting
+            ? const SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  color: Colors.white,
+                ),
+              )
+            : const Icon(Icons.currency_rupee, color: Colors.white),
+        label: isSubmitting
+            ? const Text(
+                "Processing...",
+                style: TextStyle(color: Colors.white),
+              )
+            : const Text(
+                "Pay",
+                style: TextStyle(color: Colors.white),
+              ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.green,
+          disabledBackgroundColor: Colors.green.withOpacity(0.6),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+      ),
+    ],
+  ),
+),
+
         ],
       ),
     );

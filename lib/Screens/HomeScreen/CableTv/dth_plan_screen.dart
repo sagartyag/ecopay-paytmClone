@@ -159,6 +159,8 @@ class _DthPlansScreenState
                                     "operator": operatorCode,
                                     "phone": phone,
                                    "circle": circle,
+                                   "operatorName": operatorName,
+
                                       });
 
                               },

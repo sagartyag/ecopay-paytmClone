@@ -153,9 +153,9 @@ class Lists {
     {
       "image": Images.mobilePostPaid,
       "text": "Municipal\nTax",
-      "onTap": () {
-        Get.to(() => SelectMunicipalScreen());
-      },
+      // "onTap": () {
+      //   Get.to(() => TransactionDetailScreen());
+      // },
     },
     {
       "image": Images.bookGasCylinder,
@@ -333,9 +333,9 @@ class Lists {
     {
       "image": Images.mobilePostPaid,
       "text": "Municipal\nTax",
-      "onTap": () {
-        Get.to(() => SelectMunicipalScreen());
-      },
+      // "onTap": () {
+      //   Get.to(() => TransactionDetailScreen());
+      // },
     },
     {
       "image": Images.bookGasCylinder,

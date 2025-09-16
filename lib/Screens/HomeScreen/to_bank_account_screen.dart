@@ -93,11 +93,11 @@ String formatTimestamp(String rawDate) {
         behavior: MyBehavior(),
         child: GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
+            crossAxisCount: 1,
             mainAxisSpacing: 10,
             crossAxisSpacing: 10,
-            childAspectRatio:
-                MediaQuery.of(context).size.aspectRatio * 2 / 0.8,
+            childAspectRatio: MediaQuery.of(context).size.aspectRatio * 4 / 0.8,
+                // MediaQuery.of(context).size.aspectRatio * 2 / 0.8,
           ),
           shrinkWrap: true,
           primary: false,
@@ -108,6 +108,7 @@ String formatTimestamp(String rawDate) {
             return InkWell(
               onTap: Lists.toBankAccountList[index]["onTap"],
               child: Container(
+                width: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
                   color: white,

@@ -1498,30 +1498,30 @@ class Lists {
         Get.to(() => ShowBeneficiary());
       },
     },
-    {
-      "image": Images.upiImage,
-      "text1": "Enter UPI ID",
-      "text2": "Pay to Bank A/c using UPI ID",
-      "onTap": () {
-        Get.to(() => EnterUpiIdScreen());
-      },
-    },
-    {
-      "image": Images.toMobile,
-      "text1": "Enter Mobile\nNumber",
-      "text2": "Direct transfer to linked bank a/c",
-      "onTap": () {
-        Get.to(() => ToMobileScreen());
-      },
-    },
-    {
-      "image": Images.toSelf,
-      "text1": "To Self",
-      "text2": "Send Money to your own a/c",
-      "onTap": () {
-        Get.to(() => ToSelfScreen());
-      },
-    },
+    // {
+    //   "image": Images.upiImage,
+    //   "text1": "Enter UPI ID",
+    //   "text2": "Pay to Bank A/c using UPI ID",
+    //   "onTap": () {
+    //     Get.to(() => EnterUpiIdScreen());
+    //   },
+    // },
+    // {
+    //   "image": Images.toMobile,
+    //   "text1": "Enter Mobile\nNumber",
+    //   "text2": "Direct transfer to linked bank a/c",
+    //   "onTap": () {
+    //     Get.to(() => ToMobileScreen());
+    //   },
+    // },
+    // {
+    //   "image": Images.toSelf,
+    //   "text1": "To Self",
+    //   "text2": "Send Money to your own a/c",
+    //   "onTap": () {
+    //     Get.to(() => ToSelfScreen());
+    //   },
+    // },
   ];
 
   static List<Map> toBankAccountRecentList = [

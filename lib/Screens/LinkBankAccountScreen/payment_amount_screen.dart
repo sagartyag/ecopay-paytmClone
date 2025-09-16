@@ -39,7 +39,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
     _timer?.cancel();
     super.dispose();
   }
-
+ String maskAccountNumber(String? accountNo) {
+  if (accountNo == null || accountNo.length <= 7) return accountNo ?? '';
+  String masked = '*' * 7; // 7 asterisks
+  String lastDigits = accountNo.substring(7); // show from 8th char
+  return masked + lastDigits;
+}
   /// 🔹 Fetch wallet balance
   Future<void> fetchBalance() async {
     try {
@@ -278,7 +283,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
               ),
             ),
             Text(
-              "+91 ${widget.beneficiary['mobile_no'] ?? ''}",
+              "${maskAccountNumber(widget.beneficiary['account_no'] ?? '')}",
               style: TextStyle(color: Colors.grey[300], fontSize: 12),
             ),
           ],

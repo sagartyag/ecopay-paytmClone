@@ -28,6 +28,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+   String userId = "";
   String userName = "Loading...";
 final BannerSliderController bannerSliderController = Get.put(BannerSliderController());
 
@@ -49,8 +50,10 @@ final BannerSliderController bannerSliderController = Get.put(BannerSliderContro
 
     if (data["success"] == true) {
       final user = data["data"];
+     
       setState(() {
         userName = user["name"] ?? "Guest User";
+        userId = user["username"].toString();
       });
     } else {
       setState(() {
@@ -256,7 +259,7 @@ final BannerSliderController bannerSliderController = Get.put(BannerSliderContro
                     ),
                     CommonTextWidget.InterRegular(
                       color: grey757,
-                      text: "UPI ID: 1234567890@paytm",
+                      text: "USER ID: $userId",
                       fontSize: 12,
                     ),
                   ],

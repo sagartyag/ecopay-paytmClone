@@ -86,25 +86,57 @@ class _PrepaidOperatorDetailScreenState
 
   @override
   Widget build(BuildContext context) {
+    String _getOperatorLogo(String operatorName) {
+  final name = operatorName.toLowerCase();
+
+  if (name.contains("airtel")) return "assets/images/airtel.png";
+    if (name.contains("airtel express")) return "assets/images/airtel.png";
+
+  if (name.contains("reliance jio")) return "assets/images/jio.png";
+    if (name.contains("jio express")) return "assets/images/jio.png";
+
+  if (name.contains("vi") || name.contains("vodafone")) return "assets/images/vi.png";
+    if (name.contains("vodafoneidea") || name.contains("vodafone")) return "assets/images/vi.png";
+
+  if (name.contains("bsnl topup")) return "assets/images/bsnl.png";
+  if (name.contains("bsnl special(stv)")) return "assets/images/bsnl.png";
+
+  return "assets/images/default.png"; // fallback image
+}
+
     return Scaffold(
       backgroundColor: white,
-      appBar: AppBar(
-        backgroundColor: white,
-        centerTitle: true,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        leading: InkWell(
-          onTap: () => Get.back(),
-          child: Icon(Icons.arrow_back, size: 20, color: black171),
+    appBar: AppBar(
+  backgroundColor: white,
+  centerTitle: true,
+  elevation: 0,
+  automaticallyImplyLeading: false,
+  leading: InkWell(
+    onTap: () => Get.back(),
+    child: Icon(Icons.arrow_back, size: 20, color: black171),
+  ),
+  title: Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      /// 🔹 Operator Logo Dynamically
+      Image.asset(
+        _getOperatorLogo(operatorName),  // ✅ Function se image path ayega
+        height: 28,
+        width: 28,
+      ),
+      const SizedBox(width: 8),
+      Text(
+        operatorName,
+        style: TextStyle(
+          color: black171,
+          fontWeight: FontWeight.w600,
+          fontSize: 18,
         ),
-  title: Text(
-    operatorName, 
-    style: TextStyle(
-      color: black171,
-      fontWeight: FontWeight.w600,
-      fontSize: 18,
-    ),
-  ),      ),
+      ),
+    ],
+  ),
+),
+
      body: isLoading
     ? const Center(child: CircularProgressIndicator(color: Colors.green))
     : rechargeTypes.isEmpty

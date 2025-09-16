@@ -103,6 +103,24 @@ class _PrepaidOperatorPaymentScreenState extends State<PrepaidOperatorPaymentScr
 
   @override
   Widget build(BuildContext context) {
+      String _getOperatorLogo(String operatorName) {
+  final name = operatorName.toLowerCase();
+
+  if (name.contains("airtel")) return "assets/images/airtel.png";
+    if (name.contains("airtel express")) return "assets/images/airtel.png";
+
+  if (name.contains("reliance jio")) return "assets/images/jio.png";
+    if (name.contains("jio express")) return "assets/images/jio.png";
+
+  if (name.contains("vi") || name.contains("vodafone")) return "assets/images/vi.png";
+    if (name.contains("vodafoneidea") || name.contains("vodafone")) return "assets/images/vi.png";
+
+  if (name.contains("bsnl topup")) return "assets/images/bsnl.png";
+  if (name.contains("bsnl special(stv)")) return "assets/images/bsnl.png";
+
+  return "assets/images/default.png"; // fallback image
+}
+  
     final args = Get.arguments as Map<String, dynamic>? ?? {};
     final plan = args["plan"] ?? {};
     final amount = plan["recharge_amount"] ?? "0";
@@ -311,13 +329,17 @@ void showPaymentPopup(BuildContext context, Map<String, dynamic> plan, String am
                     child: Icon(Icons.arrow_back, size: 20, color: white),
                   ),
                   const SizedBox(width: 12),
-                  Image.asset(Images.viPrepaidPaymentImage, height: 50, width: 50),
+    Image.asset(
+      _getOperatorLogo(operatorName), // ✅ Yeh function call karega
+      height: 50,
+      width: 50,
+    ),
                   const SizedBox(width: 8),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CommonTextWidget.InterSemiBold(
-                        text: "Jason Adam",
+                        text: "$operatorName",
                         fontSize: 16,
                         color: white,
                       ),
@@ -326,11 +348,11 @@ void showPaymentPopup(BuildContext context, Map<String, dynamic> plan, String am
                         fontSize: 12,
                         color: white,
                       ),
-                      CommonTextWidget.InterRegular(
-                        text: "Prepaid: $operatorName", // ✅ circle show
-                        fontSize: 10,
-                        color: white,
-                      ),
+                      // CommonTextWidget.InterRegular(
+                      //   text: "Prepaid: $operatorName", // ✅ circle show
+                      //   fontSize: 10,
+                      //   color: white,
+                      // ),
                     ],
                   ),
                 ],

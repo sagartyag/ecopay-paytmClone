@@ -7,7 +7,8 @@ import 'package:digitalwalletpaytmcloneapp/Utils/common_text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:digitalwalletpaytmcloneapp/Service/Api.dart';
-
+import 'recharge_success_screen.dart';
+import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/home_screen.dart';
 class PrepaidOperatorPaymentScreen extends StatefulWidget {
   const PrepaidOperatorPaymentScreen({Key? key}) : super(key: key);
 
@@ -18,10 +19,11 @@ class PrepaidOperatorPaymentScreen extends StatefulWidget {
 class _PrepaidOperatorPaymentScreenState extends State<PrepaidOperatorPaymentScreen> {
   double totalBalance = 0.0;
   bool isLoading = true;
-
+  bool isSubmitting = false;
   @override
   void initState() {
     super.initState();
+    isSubmitting = true;
     fetchBalance();
   }
 
@@ -50,6 +52,7 @@ class _PrepaidOperatorPaymentScreenState extends State<PrepaidOperatorPaymentScr
         isLoading = false;
       });
     }
+    
   }
 
   Future<void> doRecharge(Map<String, dynamic> plan) async {
@@ -72,16 +75,28 @@ class _PrepaidOperatorPaymentScreenState extends State<PrepaidOperatorPaymentScr
         "circle": circle,
         "amount": amount.toString(),
       });
+ 
 
       final data = response.data;
       if (data['success'] == true) {
         Get.snackbar("✅ Success", "Recharge Successful!");
+        final rawResponse = data["rawResponse"] ?? {}; // ✅ backend raw response
+        Get.off(() => RechargeSuccessScreen(apiResponse: rawResponse));
+
       } else {
         Get.snackbar("❌ Failed", data['message'] ?? "Recharge Failed!");
+        Future.delayed(Duration(seconds: 30), () {
+        Get.off(() => HomeScreen());
+         });
       }
     } catch (e) {
       print("❌ Error in doRecharge: $e");
       Get.snackbar("Error", "Something went wrong: $e");
+    }
+    finally {
+      setState(() {
+        isSubmitting = false; // 🔹 Hide loader
+      });
     }
   }
 
@@ -181,6 +196,13 @@ void showPaymentPopup(BuildContext context, Map<String, dynamic> plan, String am
           color: Colors.black, // 🔹 Balance black
         ),
       ),
+       if (isSubmitting)
+            Container(
+              color: Colors.black.withOpacity(0.3),
+              child: const Center(
+                child: CircularProgressIndicator(color: Colors.green),
+              ),
+            ),
                     ],
                   ),
                 ],

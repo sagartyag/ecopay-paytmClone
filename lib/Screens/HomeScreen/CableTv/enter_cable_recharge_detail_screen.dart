@@ -9,6 +9,19 @@ class EnterCableRechargeDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+       String _getOperatorLogo(String operatorName) {
+  final name = operatorName.toLowerCase();
+
+  if (name.contains("dish tv")) return "assets/images/dishTv.png";
+    if (name.contains("tata play")) return "assets/images/tataPlay.png";
+
+  if (name.contains("videocon dth")) return "assets/images/videocon.png";
+    if (name.contains("sun direct")) return "assets/images/sunDirect.png";
+
+  if (name.contains("airtel digital tv")) return "assets/images/airtel.png";
+
+  return "assets/images/default.png"; // fallback image
+}
     final args = Get.arguments ?? {};
     final operatorCode = args["operatorCode"] ?? "Unknown";
     final circleCode = args["circleCode"] ?? "Unknown";
@@ -53,8 +66,13 @@ class EnterCableRechargeDetailScreen extends StatelessWidget {
                       color: Colors.green.withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.tv, color: Colors.green, size: 22),
-                  ),
+  child: Padding(
+        padding: const EdgeInsets.all(6.0), // thoda gap dene ke liye
+        child: Image.asset(
+          _getOperatorLogo(operatorName), // 👈 Function call yaha
+          fit: BoxFit.contain,
+        ),
+      ),                  ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(

@@ -83,6 +83,19 @@ class _DthPlansScreenState
 
   @override
   Widget build(BuildContext context) {
+      String _getOperatorLogo(String operatorName) {
+  final name = operatorName.toLowerCase();
+
+  if (name.contains("dish tv")) return "assets/images/dishTv.png";
+    if (name.contains("tata play")) return "assets/images/tataPlay.png";
+
+  if (name.contains("videocon dth")) return "assets/images/videocon.png";
+    if (name.contains("sun direct")) return "assets/images/sunDirect.png";
+
+  if (name.contains("airtel digital tv")) return "assets/images/airtel.png";
+
+  return "assets/images/default.png"; // fallback image
+}
     return Scaffold(
       backgroundColor: white,
       appBar: AppBar(
@@ -94,14 +107,26 @@ class _DthPlansScreenState
           onTap: () => Get.back(),
           child: Icon(Icons.arrow_back, size: 20, color: black171),
         ),
- title: Text(
-    operatorName, 
-    style: TextStyle(
-      color: black171,
-      fontWeight: FontWeight.w600,
-      fontSize: 18,
-    ),
-  ),      ),
+title: Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      /// 🔹 Operator Logo Dynamically
+      Image.asset(
+        _getOperatorLogo(operatorName),  // ✅ Function se image path ayega
+        height: 28,
+        width: 28,
+      ),
+      const SizedBox(width: 8),
+      Text(
+        operatorName,
+        style: TextStyle(
+          color: black171,
+          fontWeight: FontWeight.w600,
+          fontSize: 18,
+        ),
+      ),
+    ],
+  ),    ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator(color: Colors.green))
           : Column(
@@ -144,72 +169,103 @@ class _DthPlansScreenState
                           ),
                         );
                       }
-                      return ListView.builder(
-                        padding: EdgeInsets.all(16),
-                        itemCount: plans.length,
-                        itemBuilder: (context, index) {
-                          final plan = plans[index];
-                          return Padding(
-                            padding: EdgeInsets.only(bottom: 15),
-                            child: InkWell(
-                              onTap: () {
-                            Get.to(() => PrepaidOperatorPaymentScreen(),
-                                 arguments: {
-                                    "plan": plan,
-                                    "operator": operatorCode,
-                                    "phone": phone,
-                                   "circle": circle,
-                                   "operatorName": operatorName,
+                   return ListView.builder(
+  padding: const EdgeInsets.all(12),
+  itemCount: plans.length,
+  itemBuilder: (context, index) {
+    final plan = plans[index];
 
-                                      });
+    return InkWell(
+      onTap: () {
+        Get.to(() => PrepaidOperatorPaymentScreen(), arguments: {
+          "plan": plan,
+          "operator": operatorCode,
+          "phone": phone,
+          "circle": circle,
+          "operatorName": operatorName,
+        });
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.15),
+              blurRadius: 6,
+              offset: const Offset(0, 3),
+            )
+          ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /// 💰 Price Box
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                "₹${plan['recharge_amount'] ?? ''}",
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green,
+                ),
+              ),
+            ),
 
-                              },
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CommonTextWidget.InterSemiBold(
-                                    text: "₹${plan['recharge_amount'] ?? ''}",
-                                    fontSize: 20,
-                                    color: black171,
-                                  ),
-                                  SizedBox(width: 15),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        CommonTextWidget.InterMedium(
-                                          text:
-                                              "Validity: ${plan['recharge_validity'] ?? 'N/A'}",
-                                          fontSize: 14,
-                                          color: black171,
-                                        ),
-                                        SizedBox(height: 5),
-                                        Text(
-                                          plan['recharge_short_desc'] ??
-                                              plan['recharge_long_desc'] ??
-                                              "",
-                                          style: TextStyle(
-                                            fontFamily:
-                                                FontFamily.InterRegular,
-                                            fontSize: 12,
-                                            color: grey757,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Align(
-                                    alignment: Alignment.topRight,
-                                    child: Icon(Icons.arrow_forward_ios,
-                                        color: grey757, size: 18),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      );
+            const SizedBox(width: 12),
+
+            /// 📄 Plan Details
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  /// 🔹 Validity (if available)
+                  if (plan['recharge_validity'] != null &&
+                      plan['recharge_validity'].toString().isNotEmpty)
+                    Text(
+                      "Validity: ${plan['recharge_validity']}",
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black87,
+                      ),
+                    ),
+
+                  const SizedBox(height: 6),
+
+                  /// 🔹 Short / Long Description
+                  Text(
+                    plan['recharge_short_desc'] ??
+                        plan['recharge_long_desc'] ??
+                        "",
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.black54,
+                      height: 1.3,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            /// ➡️ Right Arrow
+            const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+          ],
+        ),
+      ),
+    );
+  },
+);
+
                     }).toList(),
                   ),
                 )

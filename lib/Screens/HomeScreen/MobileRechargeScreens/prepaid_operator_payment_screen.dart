@@ -118,6 +118,14 @@ class _PrepaidOperatorPaymentScreenState extends State<PrepaidOperatorPaymentScr
   if (name.contains("bsnl topup")) return "assets/images/bsnl.png";
   if (name.contains("bsnl special(stv)")) return "assets/images/bsnl.png";
 
+  if (name.contains("dish tv")) return "assets/images/dishTv.png";
+    if (name.contains("tata play")) return "assets/images/tataPlay.png";
+
+  if (name.contains("videocon dth")) return "assets/images/videocon.png";
+    if (name.contains("sun direct")) return "assets/images/sunDirect.png";
+
+  if (name.contains("airtel digital tv")) return "assets/images/airtel.png";
+
   return "assets/images/default.png"; // fallback image
 }
   

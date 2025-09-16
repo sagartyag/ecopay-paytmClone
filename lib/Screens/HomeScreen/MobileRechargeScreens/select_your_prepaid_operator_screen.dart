@@ -63,6 +63,23 @@ class _SelectYourPrepaidOperatorScreenState
 
   @override
   Widget build(BuildContext context) {
+       String _getOperatorLogo(String operatorName) {
+  final name = operatorName.toLowerCase();
+
+  if (name.contains("airtel")) return "assets/images/airtel.png";
+    if (name.contains("airtel express")) return "assets/images/airtel.png";
+
+  if (name.contains("reliance jio")) return "assets/images/jio.png";
+    if (name.contains("jio express")) return "assets/images/jio.png";
+
+  if (name.contains("vi") || name.contains("vodafone")) return "assets/images/vi.png";
+    if (name.contains("vodafoneidea") || name.contains("vodafone")) return "assets/images/vi.png";
+
+  if (name.contains("bsnl topup")) return "assets/images/bsnl.png";
+  if (name.contains("bsnl special(stv)")) return "assets/images/bsnl.png";
+
+  return "assets/images/default.png"; // fallback image
+}
     return Scaffold(
       backgroundColor: white,
       appBar: AppBar(
@@ -116,22 +133,36 @@ class _SelectYourPrepaidOperatorScreenState
                                     });
                               },
                               child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: Colors.grey.shade300, width: 1),
-                                  borderRadius: BorderRadius.circular(16),
-                                  color: white,
-                                ),
-                                child: ListTile(
-                                  leading: Icon(Icons.sim_card,
-                                      size: 45, color: Colors.green),
-                                  title: CommonTextWidget.InterSemiBold(
-                                    text: operator['name'] ?? "",
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ),
+  decoration: BoxDecoration(
+    border: Border.all(color: Colors.grey.shade300, width: 1),
+    borderRadius: BorderRadius.circular(16),
+    color: white,
+  ),
+  child: ListTile(
+    // 👇 Icon ki jagah Image.asset ka use
+    leading: Container(
+      height: 45,
+      width: 45,
+      decoration: BoxDecoration(
+        color: Colors.green.withOpacity(0.1),
+        shape: BoxShape.circle,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(6.0), // image ko thoda center me lane ke liye
+        child: Image.asset(
+          _getOperatorLogo(operator['name'] ?? ""), // 👈 dynamic logo path
+          fit: BoxFit.contain,
+        ),
+      ),
+    ),
+    title: CommonTextWidget.InterSemiBold(
+      text: operator['name'] ?? "",
+      fontSize: 16,
+      color: Colors.black,
+    ),
+  ),
+)
+
                             ),
                           );
                         },

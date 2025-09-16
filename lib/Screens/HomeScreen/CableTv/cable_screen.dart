@@ -77,6 +77,19 @@ class _SelectCableScreenState extends State<SelectCableScreen> {
 
   @override
   Widget build(BuildContext context) {
+      String _getOperatorLogo(String operatorName) {
+  final name = operatorName.toLowerCase();
+
+  if (name.contains("dish tv")) return "assets/images/dishTv.png";
+    if (name.contains("tata play")) return "assets/images/tataPlay.png";
+
+  if (name.contains("videocon dth")) return "assets/images/videocon.png";
+    if (name.contains("sun direct")) return "assets/images/sunDirect.png";
+
+  if (name.contains("airtel digital tv")) return "assets/images/airtel.png";
+
+  return "assets/images/default.png"; // fallback image
+}
     return Scaffold(
       backgroundColor: white,
       appBar: AppBar(
@@ -184,17 +197,26 @@ class _SelectCableScreenState extends State<SelectCableScreen> {
                               border: Border.all(color: Colors.grey.shade300),
                             ),
                             child: Row(
-                              children: [
-                                const Icon(Icons.tv, color: Colors.green),
-                                const SizedBox(width: 12),
-                                Text(
-                                  operator['name'] ?? "",
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
+                             children: [
+  /// ✅ Operator Logo Dynamically
+  Image.asset(
+    _getOperatorLogo(operator['name'] ?? ""),
+    height: 35,
+    width: 35,
+    fit: BoxFit.contain,
+  ),
+  const SizedBox(width: 12),
+
+  /// ✅ Operator Name
+  Text(
+    operator['name'] ?? "",
+    style: const TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w600,
+    ),
+  ),
+],
+
                             ),
                           ),
                         );

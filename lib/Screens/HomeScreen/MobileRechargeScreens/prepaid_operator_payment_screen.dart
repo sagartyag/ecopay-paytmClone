@@ -74,6 +74,7 @@ class _PrepaidOperatorPaymentScreenState extends State<PrepaidOperatorPaymentScr
         "phone": phone,
         "circle": circle,
         "amount": amount.toString(),
+
       });
  
 
@@ -273,7 +274,7 @@ void showPaymentPopup(BuildContext context, Map<String, dynamic> plan, String am
                 icon: const Icon(Icons.payment, color: Colors.white),
                 label: Text(
               "Pay ₹ $rechargeAmount",
-                  style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,

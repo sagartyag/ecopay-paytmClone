@@ -54,7 +54,7 @@ class _PrepaidOperatorDetailScreenState
       });
 
       final data = response.data;
-        print("👉 recharge type: $data");
+        print("sagar recharge type: $data");
 
       if (data['success'] == true) {
         final List<dynamic> plans = data['apiData']['PlanDescription'] ?? [];

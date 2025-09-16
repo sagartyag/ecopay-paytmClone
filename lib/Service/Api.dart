@@ -13,7 +13,7 @@ class ApiService {
       // 'Access-Control-Allow-Origin': '*',
     },
     connectTimeout: Duration(seconds: 15),
-    receiveTimeout: Duration(seconds: 60),
+    receiveTimeout: Duration(minutes: 5),
   ));
 
   static final FlutterSecureStorage _storage = const FlutterSecureStorage();

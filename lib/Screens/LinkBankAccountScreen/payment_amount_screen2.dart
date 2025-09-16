@@ -267,34 +267,49 @@ class _PaymentScreenState extends State<PaymentScreen> {
             const Spacer(),
 
             // Pay Button
-            SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: ElevatedButton(
-                onPressed: () {
-                  String amount = amountController.text.trim();
-                  if (amount.isEmpty || double.tryParse(amount) == null) {
-                    Get.snackbar("Error", "Enter a valid amount",
-                        backgroundColor: Colors.red.withOpacity(0.8),
-                        colorText: Colors.white);
-                    return;
-                  }
-                  showPaymentBottomSheet(amount);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                ),
-                child: isSubmitting
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                        "Pay Now",
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold,color:Colors.white),
-                      ),
-              ),
+           SizedBox(
+  width: double.infinity,
+  height: 55,
+  child: ElevatedButton(
+    onPressed: isSubmitting
+        ? null // 🔒 disable when submitting
+        : () {
+            String amount = amountController.text.trim();
+            if (amount.isEmpty || double.tryParse(amount) == null) {
+              Get.snackbar("Error", "Enter a valid amount",
+                  backgroundColor: Colors.red.withOpacity(0.8),
+                  colorText: Colors.white);
+              return;
+            }
+            showPaymentBottomSheet(amount);
+          },
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Colors.green,
+      disabledBackgroundColor: Colors.green.withOpacity(0.6), // faded look
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+    ),
+    child: isSubmitting
+        ? const SizedBox(
+            height: 22, // smaller loader
+            width: 22,
+            child: CircularProgressIndicator(
+              strokeWidth: 2.5,
+              color: Colors.white,
             ),
+          )
+        : const Text(
+            "Pay Now",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+  ),
+),
+
           ],
         ),
       ),

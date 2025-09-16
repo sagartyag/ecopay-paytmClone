@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:digitalwalletpaytmcloneapp/Service/Api.dart';
 
 class PaymentScreen extends StatefulWidget {
@@ -13,49 +15,61 @@ class PaymentScreen extends StatefulWidget {
 
 class _PaymentScreenState extends State<PaymentScreen> {
   bool isSubmitting = false;
-  final Map<String, dynamic> beneficiary = {
-    "name": "Laalu",
-    "account_no": "123456789012",
-    "ifsc": "SBIN0001234",
-    "mobile_no": "8708261224",
-    "customer_mobile_no": "9876543210",
-    "BENEFICIARYID": "BEN123456"
-  };
+  double totalBalance = 0.0;
+  bool isLoading = true;
 
-  final List<Map<String, dynamic>> messages = [
-    {
-      "amount": 500,
-      "type": "sent",
-      "status": "Sent to Bank A/c",
-      "timestamp": "05 Jan 2025 • 5:55 PM"
-    },
-    {
-      "amount": 500,
-      "type": "sent",
-      "status": "Received in 🏦 Bank",
-      "timestamp": "09 Jan 2025 • 8:54 PM"
-    },
-  ];
+  Timer? _timer;
+  final List<Map<String, dynamic>> messages = [];
+  final TextEditingController amountController = TextEditingController();
 
-  final TextEditingController _amountController = TextEditingController();
- final TextEditingController amountController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    checkAndFetchTransactions();
+    fetchBalance();
 
- String maskAccount(String? acc) {
-    if (acc == null || acc.length < 7) return acc ?? "";
-    return "${'*' * 7}${acc.substring(7)}";
+    // Schedule balance + transaction check every 1 min
+    _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      if (mounted) checkAndFetchTransactions();
+    });
   }
-void showPaymentBottomSheet(String amount) {
-    final b = widget.beneficiary;
 
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  /// 🔹 Fetch wallet balance
+  Future<void> fetchBalance() async {
+    try {
+      final response = await ApiService.get("/direct-income");
+      final data = response.data;
+
+      setState(() {
+        if (data["success"] == true) {
+          totalBalance = double.tryParse(data["balance"].toString()) ?? 0.0;
+        } else {
+          totalBalance = 0.0;
+        }
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        totalBalance = 0.0;
+        isLoading = false;
+      });
+    }
+  }
+
+  /// 🔹 Payment confirmation bottom sheet
+  void showPaymentBottomSheet(String amount) {
     Get.bottomSheet(
       Container(
         padding: const EdgeInsets.all(20),
         decoration: const BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: Wrap(
           children: [
@@ -70,18 +84,18 @@ void showPaymentBottomSheet(String amount) {
                 ),
               ),
             ),
-            // Beneficiary Card
+            // Balance Card
             Container(
               padding: const EdgeInsets.all(16),
-              margin: const EdgeInsets.only(bottom: 16),
+              margin: const EdgeInsets.only(bottom: 20),
               decoration: BoxDecoration(
                 color: Colors.green.shade50,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: Colors.green, width: 1.2),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.green.withOpacity(0.1),
-                    blurRadius: 6,
+                    color: Colors.green.withOpacity(0.08),
+                    blurRadius: 8,
                     offset: const Offset(0, 3),
                   ),
                 ],
@@ -89,49 +103,46 @@ void showPaymentBottomSheet(String amount) {
               child: Row(
                 children: [
                   Container(
-                    height: 45,
-                    width: 45,
+                    height: 48,
+                    width: 48,
                     decoration: BoxDecoration(
                       color: Colors.green,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(Icons.person, color: Colors.white, size: 26),
+                    child: const Icon(Icons.account_balance_wallet,
+                        color: Colors.white, size: 26),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          b['name'] ?? "Unknown",
-                          style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green),
+                  const SizedBox(width: 14),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Cyrus Wallet",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green,
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          "A/c No: ${maskAccount(b['account_no'])}",
-                          style: TextStyle(color: Colors.grey[700]),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        isLoading
+                            ? "Loading..."
+                            : "₹${totalBalance.toStringAsFixed(2)}",
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
                         ),
-                        Text(
-                          "IFSC: ${b['ifsc']}",
-                          style: TextStyle(color: Colors.grey[700]),
-                        ),
-                        Text(
-                          "Mobile: ${b['mobile_no'] ?? 'N/A'}",
-                          style: TextStyle(color: Colors.grey[700]),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-
             const SizedBox(height: 10),
 
-            // Pay Button
+            // Confirm Button
             ElevatedButton(
               onPressed: () {
                 Get.back();
@@ -155,7 +166,8 @@ void showPaymentBottomSheet(String amount) {
     );
   }
 
- Future<void> makePayment(String amount) async {
+  /// 🔹 API call: Make payment
+  Future<void> makePayment(String amount) async {
     final b = widget.beneficiary;
     setState(() => isSubmitting = true);
 
@@ -180,6 +192,7 @@ void showPaymentBottomSheet(String amount) {
           backgroundColor: Colors.green.withOpacity(0.8),
           colorText: Colors.white,
         );
+        fetchTransactions(); // refresh history
       } else {
         Get.snackbar(
           "Error",
@@ -198,21 +211,52 @@ void showPaymentBottomSheet(String amount) {
       );
     }
   }
-  void _sendPayment() {
-    if (_amountController.text.isEmpty) return;
 
-    final int amount = int.parse(_amountController.text);
+  /// 🔹 Periodic check
+  Future<void> checkAndFetchTransactions() async {
+    try {
+      await ApiService.get("/check-transactions");
+      await fetchTransactions();
+    } catch (e) {
+      print("Error checking and fetching transactions: $e");
+    }
+  }
 
-    setState(() {
-      messages.add({
-        "amount": amount,
-        "type": "sent",
-        "status": "Sent to Bank A/c",
-        "timestamp": "${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year} • ${TimeOfDay.now().format(context)}",
-      });
-    });
+  /// 🔹 Fetch transactions for current beneficiary
+  Future<void> fetchTransactions() async {
+    final b = widget.beneficiary;
+    try {
+      final response = await ApiService.get("/get-transactions");
+      final data = response.data;
 
-    _amountController.clear();
+      if (data['success'] == true) {
+        setState(() {
+          messages.clear();
+          for (var tx in data['transactions']) {
+            if (tx['accountNo'] == b['account_no']) {
+              messages.add({
+                "amount": tx['amount'],
+                "type": "sent",
+                "status": tx['status'] ?? "Pending",
+                "timestamp": tx['createdAt'],
+              });
+            }
+          }
+        });
+      }
+    } catch (e) {
+      print("Error fetching transactions: $e");
+    }
+  }
+
+  /// 🔹 Format timestamps
+  String formatTimestamp(String rawDate) {
+    try {
+      DateTime date = DateTime.parse(rawDate);
+      return DateFormat("dd MMM yyyy • h:mm a").format(date);
+    } catch (e) {
+      return rawDate;
+    }
   }
 
   @override
@@ -222,169 +266,187 @@ void showPaymentBottomSheet(String amount) {
         titleSpacing: 0,
         backgroundColor: Colors.green,
         elevation: 1,
-        title: Row(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                   widget.beneficiary['name'] ?? "Unknown",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Colors.white,
-                  ),
-                ),
-                Text(
-                   "+91 ${widget.beneficiary['mobile_no'] ?? ''}",
-                  style: TextStyle(color: Colors.grey[300], fontSize: 12),
-                ),
-              ],
+            Text(
+              widget.beneficiary['name'] ?? "Unknown",
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: Colors.white,
+              ),
+            ),
+            Text(
+              "+91 ${widget.beneficiary['mobile_no'] ?? ''}",
+              style: TextStyle(color: Colors.grey[300], fontSize: 12),
             ),
           ],
         ),
       ),
       backgroundColor: Colors.grey[200],
-      body: Column(
+      body: Stack(
         children: [
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(12),
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                final m = messages[index];
-                final isSent = m['type'] == 'sent';
+          Column(
+            children: [
+              // 🔹 Transactions List
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(12),
+                  itemCount: messages.length,
+                  itemBuilder: (context, index) {
+                    final m = messages[index];
+                    final isSent = m['type'] == 'sent';
 
-              return Align(
-  alignment: isSent ? Alignment.centerRight : Alignment.centerLeft,
-  child: Container(
-    margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
-    padding: const EdgeInsets.all(20), // increased padding
-    constraints: BoxConstraints(
-      maxWidth: MediaQuery.of(context).size.width * 0.85, // wider
-    ),
-    decoration: BoxDecoration(
-      color: isSent ? Colors.lightBlue[50] : Colors.white,
-      borderRadius: BorderRadius.circular(20), // bigger curve
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.08),
-          blurRadius: 10,
-          offset: const Offset(2, 5),
-        ),
-      ],
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Amount
-        Text(
-          "₹${m['amount']}",
-          style: const TextStyle(
-            fontSize: 26, // bigger
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
+                    return Align(
+                      alignment:
+                          isSent ? Alignment.centerRight : Alignment.centerLeft,
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 6),
+                        padding: const EdgeInsets.all(20),
+                        constraints: BoxConstraints(
+                          maxWidth: MediaQuery.of(context).size.width * 0.85,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSent ? Colors.lightBlue[50] : Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.08),
+                              blurRadius: 10,
+                              offset: const Offset(2, 5),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "₹${m['amount']}",
+                              style: const TextStyle(
+                                fontSize: 26,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  m['status']
+                                          .toString()
+                                          .toLowerCase()
+                                          .contains("success")
+                                      ? Icons.check_circle
+                                      : Icons.pending,
+                                  color: m['status']
+                                          .toString()
+                                          .toLowerCase()
+                                          .contains("success")
+                                      ? Colors.green
+                                      : Colors.orange,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  m['status'],
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              formatTimestamp(m['timestamp']),
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              // 🔹 Input + Pay Button
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                color: Colors.white,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: amountController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: "Enter amount",
+                          filled: true,
+                          fillColor: Colors.grey[100],
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding:
+                              const EdgeInsets.symmetric(horizontal: 16),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    ElevatedButton.icon(
+                      onPressed: isSubmitting
+                          ? null
+                          : () {
+                              String amount = amountController.text.trim();
+                              if (amount.isEmpty ||
+                                  double.tryParse(amount) == null) {
+                                Get.snackbar("Error", "Enter a valid amount",
+                                    backgroundColor:
+                                        Colors.red.withOpacity(0.8),
+                                    colorText: Colors.white);
+                                return;
+                              }
+                              showPaymentBottomSheet(amount);
+                            },
+                      icon: const Icon(Icons.currency_rupee,
+                          color: Colors.white),
+                      label: const Text(
+                        "Pay",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        disabledBackgroundColor:
+                            Colors.green.withOpacity(0.6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ),
-        const SizedBox(height: 8),
 
-        // Status
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              m['status'].toString().toLowerCase().contains("received")
-                  ? Icons.check_circle
-                  : Icons.pending,
-              color: m['status'].toString().toLowerCase().contains("received")
-                  ? Colors.green
-                  : Colors.orange,
-              size: 20,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              m['status'],
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey,
+          // 🔹 Fullscreen Loader
+          if (isSubmitting)
+            Container(
+              color: Colors.black.withOpacity(0.3),
+              child: const Center(
+                child: CircularProgressIndicator(color: Colors.green),
               ),
             ),
-          ],
-        ),
-        const SizedBox(height: 8),
-
-        // Timestamp
-        Text(
-          m['timestamp'],
-          style: const TextStyle(
-            fontSize: 13,
-            color: Colors.grey,
-          ),
-        ),
-      ],
-    ),
-  ),
-);
-
-              },
-            ),
-          ),
-
-          // Input + Button
-          Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            color: Colors.white,
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: amountController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      hintText: "Enter amount",
-                      filled: true,
-                      fillColor: Colors.grey[100],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                ElevatedButton.icon(
-                  onPressed: () {
-                  String amount = amountController.text.trim();
-                  if (amount.isEmpty || double.tryParse(amount) == null) {
-                    Get.snackbar("Error", "Enter a valid amount",
-                        backgroundColor: Colors.red.withOpacity(0.8),
-                        colorText: Colors.white);
-                    return;
-                  }
-                  showPaymentBottomSheet(amount);
-                },
-                  icon: const Icon(Icons.currency_rupee,
-                      color: Colors.white),
-                  label:isSubmitting
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                    "Pay",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );

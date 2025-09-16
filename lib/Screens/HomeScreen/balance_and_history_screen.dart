@@ -8,7 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:digitalwalletpaytmcloneapp/Service/Api.dart';
 import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/MunicipalTax/municipal_screen.dart';
-
+import 'package:intl/intl.dart';
 
 class BalanceAndHistoryScreen extends StatefulWidget {
   const BalanceAndHistoryScreen({Key? key}) : super(key: key);
@@ -73,6 +73,14 @@ void fetchTransactionHistory() async {
     setState(() => isLoading = false);
   }
 }
+String formatTimestamp(String rawDate) {
+    try {
+      DateTime date = DateTime.parse(rawDate);
+      return DateFormat("dd MMM yyyy • h:mm a").format(date);
+    } catch (e) {
+      return rawDate;
+    }
+  }
 
 Widget _buildActionButton(IconData icon, String label) {
   return Column(
@@ -111,254 +119,260 @@ Widget build(BuildContext context) {
         child: Icon(Icons.arrow_back, size: 20, color: black171),
       ),
     ),
-    body: Padding(
-      padding: EdgeInsets.symmetric(horizontal: 22),
-      child: ScrollConfiguration(
-        behavior: MyBehavior(),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 1),
-              CommonTextWidget.InterBold(
-                text: "Account Balance & History",
-                fontSize: 20,
-                color: black171,
-              ),
-              SizedBox(height: 25),
+   body: Padding(
+  padding: EdgeInsets.symmetric(horizontal: 22),
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SizedBox(height: 1),
+      CommonTextWidget.InterBold(
+        text: "Account Balance & History",
+        fontSize: 20,
+        color: black171,
+      ),
+      SizedBox(height: 25),
 
-              // 🔹 Total Balance Card
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: Colors.green,
-                    width: 1,
-                  ),
-                ),
-                padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Total Balance",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    SizedBox(height: 5),
-                    Text(
-                      isLoading
-                          ? "Loading..."
-                          : "₹${totalBalance.toStringAsFixed(2)}",
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _buildActionButton(Icons.arrow_downward, "Withdraw"),
-                        _buildActionButton(Icons.send, "Transfer"),
-                        _buildActionButton(Icons.add_circle, "Top Up"),
-                        _buildActionButton(Icons.account_balance, "Deposit"),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              SizedBox(height: 20),
-
-              // 🔹 Modern Banner Section
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFF3D9642), Color(0xFF2E6B31)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.15),
-                      blurRadius: 10,
-                      offset: Offset(0, 5),
-                    ),
-                  ],
-                ),
-                padding: EdgeInsets.all(18),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Explore your financial report",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              height: 1.4,
-                            ),
-                          ),
-                          Text(
-                            "and see the highlights!",
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.white70,
-                              height: 1.4,
-                            ),
-                          ),
-                          SizedBox(height: 12),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 14, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              "Learn More",
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF3D9642),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      height: 55,
-                      width: 55,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 6,
-                            offset: Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Image.asset(
-                          Images.appIcon,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              SizedBox(height: 15),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CommonTextWidget.InterBold(
-                    text: "Transaction",
-                    fontSize: 17,
-                    color: grey757,
-                  ),
-                  SvgPicture.asset(Images.search),
-                ],
-              ),
-
-              SizedBox(height: 20),
-
-              isLoading
-                  ? Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                      shrinkWrap: true,
-                      padding: EdgeInsets.zero,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: transactionHistoryList.length,
-                      itemBuilder: (context, index) {
-                        final tx = transactionHistoryList[index];
-                        return InkWell(
-                          onTap: () {
-                            Get.to(() =>
-                                TransactionDetailScreen(transaction: tx));
-                          },
-                          child: Padding(
-                            padding: EdgeInsets.only(bottom: 8),
-                            child: Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(Icons.account_balance_wallet,
-                                        color: Colors.green, size: 40),
-                                    SizedBox(width: 10),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        CommonTextWidget.InterBold(
-                                          text: tx["remark"] ?? "No Remark",
-                                          fontSize: 15,
-                                          color: black171,
-                                        ),
-                                        SizedBox(height: 2),
-                                        CommonTextWidget.InterMedium(
-                                          text: tx["ttime"] ?? "",
-                                          fontSize: 12,
-                                          color: grey757,
-                                        ),
-                                        SizedBox(height: 2),
-                                        Row(
-                                          children: [
-                                            CommonTextWidget.InterMedium(
-                                              text:
-                                                  " ${tx["status"] ?? "Pending"}",
-                                              fontSize: 12,
-                                              color: grey757,
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    Expanded(
-                                      child: Align(
-                                        alignment: Alignment.centerRight,
-                                        child: CommonTextWidget.InterBold(
-                                          text: "-₹${tx["amount"] ?? 0}",
-                                          fontSize: 14,
-                                          color: tx["status"] == "Success"
-                                              ? green2CA
-                                              : redE50,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 8),
-                                Divider(color: greyF3F, thickness: 1),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-            ],
+      /// 🔹 Total Balance Card
+      Container(
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: Colors.green,
+            width: 1,
           ),
         ),
+        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "Total Balance",
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(height: 5),
+            Text(
+              isLoading ? "Loading..." : "₹${totalBalance.toStringAsFixed(2)}",
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildActionButton(Icons.arrow_downward, "Withdraw"),
+                _buildActionButton(Icons.send, "Transfer"),
+                _buildActionButton(Icons.add_circle, "Top Up"),
+                _buildActionButton(Icons.account_balance, "Deposit"),
+              ],
+            ),
+          ],
+        ),
       ),
-    ),
+
+      SizedBox(height: 20),
+
+      /// 🔹 Modern Banner Section
+      Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF3D9642), Color(0xFF2E6B31)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.15),
+              blurRadius: 10,
+              offset: Offset(0, 5),
+            ),
+          ],
+        ),
+        padding: EdgeInsets.all(18),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Explore your financial report",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      height: 1.4,
+                    ),
+                  ),
+                  Text(
+                    "and see the highlights!",
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white70,
+                      height: 1.4,
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      "Learn More",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF3D9642),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              height: 55,
+              width: 55,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 6,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(10),
+                child: Image.asset(
+                  Images.appIcon,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+
+      SizedBox(height: 15),
+
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          CommonTextWidget.InterBold(
+            text: "Transaction",
+            fontSize: 17,
+            color: grey757,
+          ),
+          // SvgPicture.asset(Images.search),
+        ],
+      ),
+      SizedBox(height: 10),
+
+      /// ✅ Yaha se sirf history scroll hogi
+      Expanded(
+        child: isLoading
+            ? Center(child: CircularProgressIndicator())
+            : ListView.builder(
+                padding: EdgeInsets.zero,
+                itemCount: transactionHistoryList.length,
+                itemBuilder: (context, index) {
+                  final tx = transactionHistoryList[index];
+                  return InkWell(
+                    onTap: () {
+                      Get.to(() => TransactionDetailScreen(transaction: tx));
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: 8),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                      Container(
+  padding: EdgeInsets.all(8),
+  decoration: BoxDecoration(
+    shape: BoxShape.circle,
+    color: Colors.green.withOpacity(0.1),
+    border: Border.all(color: Colors.green, width: 1),
+  ),
+  child: Icon(
+    Icons.south_west,
+    color: Colors.green,
+    size: 24,
+  ),
+),
+
+
+
+                              SizedBox(width: 10),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  CommonTextWidget.InterBold(
+                                    text: tx["remark"] ?? "No Remark",
+                                    fontSize: 15,
+                                    color: black171,
+                                  ),
+                                  SizedBox(height: 2),
+                                  CommonTextWidget.InterMedium(
+                                    text: formatTimestamp(tx["ttime"]),
+                                    fontSize: 12,
+                                    color: grey757,
+                                  ),
+                                  SizedBox(height: 2),
+                                  Row(
+                                    children: [
+                                      CommonTextWidget.InterMedium(
+                                        text:
+                                            " ${tx["status"] ?? "Pending"}",
+                                        fontSize: 12,
+                                        color: grey757,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: CommonTextWidget.InterBold(
+                                    text: "-₹${tx["amount"] ?? 0}",
+                                    fontSize: 14,
+                                    color: tx["status"] == "Success"
+                                        ? green2CA
+                                        : redE50,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 8),
+                          Divider(color: greyF3F, thickness: 1),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+      ),
+    ],
+  ),
+),
+
   );
 }
 }

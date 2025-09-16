@@ -10,11 +10,15 @@ class TransactionDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final remark = transaction['remark'] ?? "No Remark";
-    final amount = transaction['amount'] ?? "0";
-    final txnId = transaction['usertx'] ?? "---";
+    final amount = transaction['amount']?.toString() ?? "0";
+    final txnId = transaction['api_trans_id'] ?? "---";
     final status = transaction['status'] ?? "Pending";
     final phone = transaction['phone'] ?? "N/A";
-    final operator = transaction['operator'] ?? "Unknown";
+    final orderId = transaction['orderId'] ?? "N/A";
+    final accountNo = transaction['accountNo'] ?? "N/A";
+
+    // ✅ Check if this is a Bank Transfer transaction
+    final isBankTransfer = remark == "Bank Transfer";
 
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
@@ -106,10 +110,18 @@ class TransactionDetailScreen extends StatelessWidget {
                       const SizedBox(height: 16),
                       const Divider(thickness: 1),
 
-                      /// 🔹 Details List
-                      _buildDetailRow("Operator", operator),
-                      _buildDetailRow("Mobile", phone),
-                      _buildDetailRow("Transaction ID", txnId, selectable: true),
+                      /// 🔹 Details List (conditionally show OrderId/AccountNo)
+                      if (isBankTransfer)
+                        _buildDetailRow("Order ID", orderId)
+                      else
+                        _buildDetailRow("Mobile", phone),
+
+                      if (isBankTransfer)
+                        _buildDetailRow("Account No", accountNo, selectable: true)
+                      else
+                        _buildDetailRow("Transaction ID", txnId,
+                            selectable: true),
+
                       _buildStatusRow(status),
                     ],
                   ),

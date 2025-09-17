@@ -36,19 +36,28 @@ class _SelectYourPrepaidOperatorScreenState
       final data = response.data;
         print("data sagar: $data");
 
-      List<dynamic> operatorsList = [];
+        List<dynamic> operatorsList = [];
 
-      if (data['success'] == true && data['services'] != null) {
-        for (var service in data['services']) {
-          if (service['serviceType']
-              .toString()
-              .toLowerCase()
-              .contains("prepaid")) {
-            operatorsList.addAll(service['operators']);
+    if (data['success'] == true && data['services'] != null) {
+      for (var service in data['services']) {
+        if (service['serviceType']
+            .toString()
+            .toLowerCase()
+            .contains("prepaid")) {
+          for (var op in service['operators']) {
+            final name = (op['name'] ?? "").toString().toLowerCase();
+
+            // ✅ Filter only required operators
+            if (name.contains("airtel") ||
+                name.contains("vodafoneidea") ||
+                name.contains("bsnl topup") ||
+                name.contains("reliance jio") ) {
+              operatorsList.add(op);
+            }
           }
         }
       }
-
+    }
       setState(() {
         prepaidOperators = operatorsList;
         isLoading = false;

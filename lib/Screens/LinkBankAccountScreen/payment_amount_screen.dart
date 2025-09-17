@@ -192,11 +192,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
       if (data['success'] == true) {
         Get.snackbar(
-          "Success",
-          data['message'] ?? "₹$amount sent to ${b['name']}",
-          backgroundColor: Colors.green.withOpacity(0.8),
-          colorText: Colors.white,
-        );
+  "Success",
+  "Payment successfully", // Fixed message
+  backgroundColor: Colors.green.withOpacity(0.8),
+  colorText: Colors.white,
+);
         fetchTransactions(); // refresh history
       } else {
         Get.snackbar(

@@ -223,13 +223,7 @@ void showPaymentPopup(BuildContext context, Map<String, dynamic> plan, String am
           color: Colors.black, // 🔹 Balance black
         ),
       ),
-       if (isSubmitting)
-            Container(
-              color: Colors.black.withOpacity(0.3),
-              child: const Center(
-                child: CircularProgressIndicator(color: Colors.green),
-              ),
-            ),
+      
                     ],
                   ),
                 ],
@@ -504,5 +498,12 @@ void showPaymentPopup(BuildContext context, Map<String, dynamic> plan, String am
         ],
       ),
     );
+     if (isSubmitting)
+            Container(
+              color: Colors.black.withOpacity(0.3),
+              child: const Center(
+                child: CircularProgressIndicator(color: Colors.green),
+              ),
+            );
   }
 }

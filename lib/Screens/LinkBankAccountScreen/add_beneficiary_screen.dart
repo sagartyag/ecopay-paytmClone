@@ -7,6 +7,7 @@ import 'package:digitalwalletpaytmcloneapp/Utils/common_text_widget.dart';
 import 'package:digitalwalletpaytmcloneapp/Utils/common_textfeild_widget.dart';
 import 'package:digitalwalletpaytmcloneapp/Service/Api.dart';
 import 'otp_verification_screen.dart'; // Import OTP screen
+import 'show_beneficiary_screen.dart';
 class AddBeneficiaryScreen extends StatefulWidget {
   final String bankId;
   final String bankName;
@@ -64,7 +65,7 @@ try {
   if (data['success'] == true) {
     Get.snackbar("Success", data['message'] ?? "Beneficiary added successfully");
     // Get.back(result: true);
-     
+      Get.off(() => ShowBeneficiary());
   } else {
     Get.snackbar("Error", data['message'] ?? "Failed to add beneficiary");
   }

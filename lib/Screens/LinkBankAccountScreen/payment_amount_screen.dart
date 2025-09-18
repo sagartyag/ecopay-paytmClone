@@ -122,7 +122,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        "Cyrus Wallet",
+                        "Eco Pay Wallet",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

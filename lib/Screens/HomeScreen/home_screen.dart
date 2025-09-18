@@ -15,7 +15,7 @@ import 'package:digitalwalletpaytmcloneapp/main.dart';
 import 'package:digitalwalletpaytmcloneapp/Service/Api.dart';
 import 'package:digitalwalletpaytmcloneapp/Screens/ReferAndEarnScreen/refer_and_earn_screen.dart';
 import 'package:digitalwalletpaytmcloneapp/Screens/AllServicesScreen/all_services_screen.dart';
-
+import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/MobileRechargeScreens/mobile_recharge_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -121,12 +121,12 @@ final BannerSliderController bannerSliderController = Get.put(BannerSliderContro
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              InkWell(
-                onTap: () {
-                  Get.to(() => ScannerScreen());
-                },
-                child: SvgPicture.asset(Images.scanCodeIcon),
-              ),
+              // InkWell(
+              //   onTap: () {
+              //     Get.to(() => ScannerScreen());
+              //   },
+              //   child: SvgPicture.asset(Images.scanCodeIcon),
+              // ),
               SizedBox(width: 20),
               InkWell(
                 onTap: () {
@@ -183,14 +183,14 @@ final BannerSliderController bannerSliderController = Get.put(BannerSliderContro
               // ),
               InkWell(
                 onTap: () {
-                  Get.to(() => ToMobileScreen());
+                  Get.to(() => MobileRechargeScreen());
                 },
                 child: Column(
                   children: [
                   SvgPicture.asset(Images.toMobile,color: Colors.green,),
                     CommonTextWidget.InterSemiBold(
                       color: black171,
-                      text: "To Mobile",
+                      text: "Mobile Recharge",
                       fontSize: 12,
                     ),
                   ],

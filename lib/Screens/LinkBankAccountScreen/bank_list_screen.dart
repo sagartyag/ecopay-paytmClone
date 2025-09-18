@@ -173,7 +173,7 @@ class _SelectBankScreenState extends State<SelectBankScreen> {
     // 1️⃣ Call backend to check user status
     final response = await ApiService.get("/check-user-status");
     final data = response.data;
-
+    print("check-user-status response: $data");
     if (data['success'] == true) {
       final status = data['status'];   // active / inactive
       final action = data['action'];   // PROCEED / KYC_REQUIRED / REGISTER_REQUIRED

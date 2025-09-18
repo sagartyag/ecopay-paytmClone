@@ -23,7 +23,7 @@ class _PrepaidOperatorPaymentScreenState extends State<PrepaidOperatorPaymentScr
   @override
   void initState() {
     super.initState();
-    isSubmitting = true;
+    
     fetchBalance();
   }
 
@@ -58,7 +58,9 @@ class _PrepaidOperatorPaymentScreenState extends State<PrepaidOperatorPaymentScr
   Future<void> doRecharge(Map<String, dynamic> plan) async {
     try {
       final args = Get.arguments as Map<String, dynamic>;
-
+            setState(() {
+    isSubmitting = true;
+  });
       print("👉 Arguments received in Payment Screen: $args");
 
       final operator1 = args["operator"];
@@ -81,7 +83,7 @@ class _PrepaidOperatorPaymentScreenState extends State<PrepaidOperatorPaymentScr
       final data = response.data;
       if (data['success'] == true) {
         Get.snackbar("✅ Success", "Recharge Successful!");
-        final rawResponse = data["rawResponse"] ?? {}; // ✅ backend raw response
+        final rawResponse = data["apiData"] ?? {}; // ✅ backend raw response
         Get.off(() => RechargeSuccessScreen(apiResponse: rawResponse));
 
       } else {
@@ -112,7 +114,7 @@ class _PrepaidOperatorPaymentScreenState extends State<PrepaidOperatorPaymentScr
   if (name.contains("reliance jio")) return "assets/images/jio.png";
     if (name.contains("jio express")) return "assets/images/jio.png";
 
-  if (name.contains("vi") || name.contains("vodafone")) return "assets/images/vi.png";
+  // if (name.contains("vi") || name.contains("vodafone")) return "assets/images/vi.png";
     if (name.contains("vodafoneidea") || name.contains("vodafone")) return "assets/images/vi.png";
 
   if (name.contains("bsnl topup")) return "assets/images/bsnl.png";
@@ -203,7 +205,7 @@ void showPaymentPopup(BuildContext context, Map<String, dynamic> plan, String am
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        "Cyrus Wallet",
+                        "Eco Pay Wallet",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -223,6 +225,7 @@ void showPaymentPopup(BuildContext context, Map<String, dynamic> plan, String am
           color: Colors.black, // 🔹 Balance black
         ),
       ),
+      
       
                     ],
                   ),
@@ -314,76 +317,74 @@ void showPaymentPopup(BuildContext context, Map<String, dynamic> plan, String am
   );
 }
 
-    return Scaffold(
-      backgroundColor: Colors.green,
-      body: Column(
+return Scaffold(
+  backgroundColor: Colors.green,
+  body: Stack(
+    children: [
+      /// Main Layout
+      Column(
         children: [
+          // 🔹 Header
           Container(
             color: Colors.green,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 50, left: 22, right: 22, bottom: 18),
-              child: Row(
-                children: [
-                  InkWell(
-                    onTap: () {
-                      Get.back();
-                    },
-                    child: Icon(Icons.arrow_back, size: 20, color: white),
-                  ),
-                  const SizedBox(width: 12),
-    Image.asset(
-      _getOperatorLogo(operatorName), // ✅ Yeh function call karega
-      height: 50,
-      width: 50,
-    ),
-                  const SizedBox(width: 8),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CommonTextWidget.InterSemiBold(
-                        text: "$operatorName",
-                        fontSize: 16,
-                        color: white,
-                      ),
-                      CommonTextWidget.InterRegular(
-                        text: "+91$phone", // ✅ phone show
-                        fontSize: 12,
-                        color: white,
-                      ),
-                      // CommonTextWidget.InterRegular(
-                      //   text: "Prepaid: $operatorName", // ✅ circle show
-                      //   fontSize: 10,
-                      //   color: white,
-                      // ),
-                    ],
-                  ),
-                ],
-              ),
+            padding: const EdgeInsets.only(
+                top: 50, left: 22, right: 22, bottom: 18),
+            child: Row(
+              children: [
+                InkWell(
+                  onTap: () => Get.back(),
+                  child: Icon(Icons.arrow_back, size: 20, color: white),
+                ),
+                const SizedBox(width: 12),
+                Image.asset(
+                  _getOperatorLogo(operatorName),
+                  height: 50,
+                  width: 50,
+                ),
+                const SizedBox(width: 8),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CommonTextWidget.InterSemiBold(
+                      text: "$operatorName",
+                      fontSize: 16,
+                      color: white,
+                    ),
+                    CommonTextWidget.InterRegular(
+                      text: "+91$phone",
+                      fontSize: 12,
+                      color: white,
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
+
+          // 🔹 Body
           Expanded(
             child: Container(
-              height: Get.height,
               width: Get.width,
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.only(
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.only(
                   topRight: Radius.circular(28),
                   topLeft: Radius.circular(28),
                 ),
-                color: white,
+                color: Colors.white,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  /// amount card
                   Padding(
-                    padding: const EdgeInsets.only(top: 24, right: 24, left: 24, bottom: 15),
+                    padding: const EdgeInsets.all(24),
                     child: Container(
                       height: 65,
                       width: Get.width,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(color: greyE5E, width: 1),
-                        color: white,
+                        color: Colors.white,
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(16),
@@ -395,55 +396,38 @@ void showPaymentPopup(BuildContext context, Map<String, dynamic> plan, String am
                       ),
                     ),
                   ),
-                  // Padding(
-                  //   padding: const EdgeInsets.only(right: 24, left: 24),
-                  //   child: Container(
-                  //     height: 50,
-                  //     width: 135,
-                  //     decoration: BoxDecoration(
-                  //       borderRadius: BorderRadius.circular(16),
-                  //       border: Border.all(color: greyE5E, width: 1),
-                  //       color: white,
-                  //     ),
-                  //     child: Center(
-                  //       child: CommonTextWidget.InterMedium(
-                  //         text: "Change Plan",
-                  //         fontSize: 16,
-                  //         color: Colors.green,
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
+
+                  /// bottom section
                   Expanded(
                     child: Align(
                       alignment: Alignment.bottomCenter,
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Center(
-                            child: InkWell(
-                              onTap: () {
-                                Get.bottomSheet(
-                                  RechargeDetailScreen(plan: plan),
-                                  backgroundColor: Colors.transparent,
-                                  isScrollControlled: true,
-                                );
-                              },
-                              child: Text(
-                                "Recharge Details",
-                                style: TextStyle(
-                                  color: Colors.green,
-                                  fontSize: 14,
-                                  fontFamily: FontFamily.InterMedium,
-                                  decoration: TextDecoration.underline,
-                                ),
+                          InkWell(
+                            onTap: () {
+                              Get.bottomSheet(
+                                RechargeDetailScreen(plan: plan),
+                                backgroundColor: Colors.transparent,
+                                isScrollControlled: true,
+                              );
+                            },
+                            child: Text(
+                              "Recharge Details",
+                              style: TextStyle(
+                                color: Colors.green,
+                                fontSize: 14,
+                                fontFamily: FontFamily.InterMedium,
+                                decoration: TextDecoration.underline,
                               ),
                             ),
                           ),
                           const SizedBox(height: 20),
                           Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 25, vertical: 18),
                             decoration: BoxDecoration(
-                              color: white,
+                              color: Colors.white,
                               borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(20),
                                 topRight: Radius.circular(20),
@@ -457,34 +441,29 @@ void showPaymentPopup(BuildContext context, Map<String, dynamic> plan, String am
                                 ),
                               ],
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  top: 18, left: 25, right: 25, bottom: 30),
-                              child: Row(
-                                children: [
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: InkWell(
-                       onTap: () => showPaymentPopup(context, plan, amount),
-                                      child: Container(
-                                        height: 55,
-                                        width: Get.width,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(16),
-                                          color: Colors.green,
-                                        ),
-                                        child: Center(
-                                          child: CommonTextWidget.InterSemiBold(
-                                            text: "Pay ₹ $amount",
-                                            fontSize: 20,
-                                            color: white,
-                                          ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: () =>
+                                        showPaymentPopup(context, plan, amount),
+                                    child: Container(
+                                      height: 55,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(16),
+                                        color: Colors.green,
+                                      ),
+                                      child: Center(
+                                        child: CommonTextWidget.InterSemiBold(
+                                          text: "Pay ₹ $amount",
+                                          fontSize: 20,
+                                          color: Colors.white,
                                         ),
                                       ),
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -497,13 +476,21 @@ void showPaymentPopup(BuildContext context, Map<String, dynamic> plan, String am
           ),
         ],
       ),
-    );
-     if (isSubmitting)
-            Container(
-              color: Colors.black.withOpacity(0.3),
-              child: const Center(
-                child: CircularProgressIndicator(color: Colors.green),
-              ),
-            );
+
+      /// Loader Overlay (always on top of everything)
+      if (isSubmitting)
+        Container(
+          height: Get.height,
+          width: Get.width,
+          color: Colors.black.withOpacity(0.3),
+          child: const Center(
+            child: CircularProgressIndicator(color: Colors.green),
+          ),
+        ),
+    ],
+  ),
+);
+
+     
   }
 }

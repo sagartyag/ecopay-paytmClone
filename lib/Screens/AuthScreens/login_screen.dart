@@ -212,41 +212,41 @@ class _LogInScreenState extends State<LogInScreen> {
 
             const SizedBox(height: 20),
 
-            const Text("Or login with",
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-            const SizedBox(height: 15),
+            // const Text("Or login with",
+            //     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+            // const SizedBox(height: 15),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                socialButton("G", Colors.red),
-                const SizedBox(width: 15),
-                socialButton("f", Colors.blue),
-                const SizedBox(width: 15),
-                socialButton("X", Colors.black),
-                const SizedBox(width: 15),
-                socialButton("in", Colors.blueAccent),
-              ],
-            ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   children: [
+            //     socialButton("G", Colors.red),
+            //     const SizedBox(width: 15),
+            //     socialButton("f", Colors.blue),
+            //     const SizedBox(width: 15),
+            //     socialButton("X", Colors.black),
+            //     const SizedBox(width: 15),
+            //     socialButton("in", Colors.blueAccent),
+            //   ],
+            // ),
 
             const SizedBox(height: 25),
 
-            RichText(
-              text: const TextSpan(
-                text: "New user? ",
-                style: TextStyle(color: Colors.black54, fontSize: 14),
-                children: [
-                  TextSpan(
-                    text: "Signup",
-                    style: TextStyle(
-                      color: Colors.green,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            // RichText(
+            //   text: const TextSpan(
+            //     text: "New user? ",
+            //     style: TextStyle(color: Colors.black54, fontSize: 14),
+            //     children: [
+            //       TextSpan(
+            //         text: "Signup",
+            //         style: TextStyle(
+            //           color: Colors.green,
+            //           fontWeight: FontWeight.bold,
+            //           fontSize: 14,
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
             const SizedBox(height: 30),
           ],
         ),

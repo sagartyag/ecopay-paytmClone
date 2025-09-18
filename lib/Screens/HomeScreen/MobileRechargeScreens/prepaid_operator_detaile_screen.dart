@@ -24,6 +24,7 @@ class _PrepaidOperatorDetailScreenState
   final TextEditingController searchController = TextEditingController();
 
   Map<String, List<dynamic>> groupedPlans = {};
+  Map<String, List<dynamic>> filteredPlans = {};
   List<String> rechargeTypes = [];
   bool isLoading = true;
   late String operatorCode;
@@ -41,6 +42,10 @@ class _PrepaidOperatorDetailScreenState
     phone = args["phone"] ?? "";
     circle = args["circle"] ?? "";
     operatorName = args["operatorName"] ?? "";
+     searchController.addListener(() {
+      _filterPlans(searchController.text.trim());
+    });
+
 
     fetchPlans();
   }
@@ -69,6 +74,7 @@ class _PrepaidOperatorDetailScreenState
           groupedPlans[type]!.add(plan);
         }
 
+          filteredPlans = Map.from(groupedPlans);
         setState(() {
           rechargeTypes = groupedPlans.keys.toList();
           tabController = TabController(length: rechargeTypes.length, vsync: this);
@@ -83,6 +89,33 @@ class _PrepaidOperatorDetailScreenState
       Get.snackbar("Error", "Something went wrong");
     }
   }
+
+void _filterPlans(String query) {
+  if (query.isEmpty) {
+    setState(() {
+      filteredPlans = Map.from(groupedPlans);
+    });
+    return;
+  }
+
+  final lowerQuery = query.toLowerCase();
+  final Map<String, List<dynamic>> temp = {};
+
+  groupedPlans.forEach((type, plans) {
+    final matched = plans.where((plan) {
+      final amount = plan['recharge_amount']?.toString().toLowerCase() ?? "";
+      return amount.contains(lowerQuery); // ✅ only filter inside tabs
+    }).toList();
+
+    temp[type] = matched; // keep all tabs but with filtered list
+  });
+
+  setState(() {
+    filteredPlans = temp;
+  });
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -150,17 +183,19 @@ class _PrepaidOperatorDetailScreenState
         : Column(
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 22, vertical: 10),
-                child: CommonTextFieldWidget.TextFormField2(
-                  prefixIcon: Padding(
-                    padding: EdgeInsets.all(15),
-                    child: SvgPicture.asset(Images.search, color: Colors.green),
-                  ),
-                  keyboardType: TextInputType.text,
-                  hintText: "Search Plan",
-                  controller: searchController,
-                ),
-              ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 22, vertical: 10),
+                      child: CommonTextFieldWidget.TextFormField2(
+                        prefixIcon: Padding(
+                          padding: const EdgeInsets.all(15),
+                          child: SvgPicture.asset(Images.search,
+                              color: Colors.green),
+                        ),
+                        keyboardType: TextInputType.number,
+                        hintText: "Search by Amount",
+                        controller: searchController,
+                      ),
+                    ),
 
             
               TabBar(
@@ -177,7 +212,7 @@ class _PrepaidOperatorDetailScreenState
                 child: TabBarView(
                   controller: tabController,
                   children: rechargeTypes.map((type) {
-                    final plans = groupedPlans[type] ?? [];
+                    final plans = filteredPlans[type] ?? [];
                     if (plans.isEmpty) {
                       return Center(
                         child: CommonTextWidget.InterMedium(

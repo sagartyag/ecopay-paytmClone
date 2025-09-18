@@ -499,21 +499,21 @@ class Lists {
     //   "text1": "Instant Personal Loan",
     //   "text2": "Apply now & get upto ₹3 Lakhs",
     // },
-    {
-      "image": Images.tapToPay,
-      "text1": "Tap to Pay",
-      "text2": "Activate new or manage existing cards. "
-          "Check transaction history for activated "
-          "Cards.",
-           "onTap": () {
-        Get.to(() => ScannerScreen());
-      }
-    },
-    {
-      "image": Images.viewQrAndUpiId,
-      "text1": "View QR and UPI ID",
-      "text2": "Receive money from any UPI App",
-    },
+    // {
+    //   "image": Images.tapToPay,
+    //   "text1": "Tap to Pay",
+    //   "text2": "Activate new or manage existing cards. "
+    //       "Check transaction history for activated "
+    //       "Cards.",
+    //        "onTap": () {
+    //     Get.to(() => ScannerScreen());
+    //   }
+    // },
+    // {
+    //   "image": Images.viewQrAndUpiId,
+    //   "text1": "View QR and UPI ID",
+    //   "text2": "Receive money from any UPI App",
+    // },
   ];
 
   static List<Map> enterContactList = [
@@ -645,16 +645,16 @@ class Lists {
         Get.to(() => HelpScreen2());
       },
     },
-    {
-      "image": Images.renewableEnergy,
-      "text1": "Payment Settings",
-      "text2": "UPI, Linked Bank Account, cards, "
-          "wallet, Automatic Payments & "
-          "Subscriptions, Other Accounts",
-      "onTap": () {
-        Get.to(() => PaymentSettingScreen());
-      },
-    },
+    // {
+    //   "image": Images.renewableEnergy,
+    //   "text1": "Payment Settings",
+    //   "text2": "UPI, Linked Bank Account, cards, "
+    //       "wallet, Automatic Payments & "
+    //       "Subscriptions, Other Accounts",
+    //   "onTap": () {
+    //     Get.to(() => PaymentSettingScreen());
+    //   },
+    // },
     {
       "image": Images.shoppingBag,
       "text1": "Orders & Bookings",
@@ -672,14 +672,14 @@ class Lists {
     //     Get.to(() => DigiLockerScreen());
     //   },
     // },
-    {
-      "image": Images.cashBackAndOffer1,
-      "text1": "Cashback & Offers",
-      "text2": "Stickers, Reward Points, Cashback Vouchers & Offers",
-      "onTap": () {
-        Get.to(() => CashBackAndOfferScreen());
-      },
-    },
+    // {
+    //   "image": Images.cashBackAndOffer1,
+    //   "text1": "Cashback & Offers",
+    //   "text2": "Stickers, Reward Points, Cashback Vouchers & Offers",
+    //   "onTap": () {
+    //     Get.to(() => CashBackAndOfferScreen());
+    //   },
+    // },
     // {
     //   "image": Images.personalLoan,
     //   "text1": "Instant Personal Loan",

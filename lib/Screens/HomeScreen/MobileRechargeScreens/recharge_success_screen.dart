@@ -29,7 +29,7 @@ class RechargeSuccessScreen extends StatelessWidget {
               Text(
                 apiResponse["Status"] == "Success"
                     ? "Recharge Successful!"
-                    : "Recharge Failed!",
+                    : "Recharge Pending!",
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,

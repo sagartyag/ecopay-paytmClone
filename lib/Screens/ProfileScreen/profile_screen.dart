@@ -167,32 +167,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 SizedBox(height: 40),
 
                 // Payment Section
-                CommonTextWidget.InterBold(
-                  text: "Payment Accounts Status",
-                  fontSize: 18,
-                  color: black171,
-                ),
-                SizedBox(height: 20),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  horizontalTitleGap: 8,
-                  leading: SvgPicture.asset(Images.digiWallet, color: Colors.green),
-                  title: CommonTextWidget.InterBold(
-                    text: "DigiWallet",
-                    fontSize: 14,
-                    color: black171,
-                  ),
-                  subtitle: CommonTextWidget.InterRegular(
-                    text: "₹1,00,0000 Monthly Limit",
-                    fontSize: 12,
-                    color: grey757,
-                  ),
-                  trailing: CommonTextWidget.InterMedium(
-                    text: "Activate Now",
-                    fontSize: 14,
-                    color: Colors.green,
-                  ),
-                ),
+                // CommonTextWidget.InterBold(
+                //   text: "Payment Accounts Status",
+                //   fontSize: 18,
+                //   color: black171,
+                // ),
+                // SizedBox(height: 20),
+                // ListTile(
+                //   contentPadding: EdgeInsets.zero,
+                //   horizontalTitleGap: 8,
+                //   leading: SvgPicture.asset(Images.digiWallet, color: Colors.green),
+                //   title: CommonTextWidget.InterBold(
+                //     text: "DigiWallet",
+                //     fontSize: 14,
+                //     color: black171,
+                //   ),
+                //   subtitle: CommonTextWidget.InterRegular(
+                //     text: "₹1,00,0000 Monthly Limit",
+                //     fontSize: 12,
+                //     color: grey757,
+                //   ),
+                //   trailing: CommonTextWidget.InterMedium(
+                //     text: "Activate Now",
+                //     fontSize: 14,
+                //     color: Colors.green,
+                //   ),
+                // ),
               ],
             ),
           ),

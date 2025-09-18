@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:digitalwalletpaytmcloneapp/Service/Api.dart';
 import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/MunicipalTax/municipal_screen.dart';
 import 'package:intl/intl.dart';
+import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/all_balance_history.dart';
 
 class BalanceAndHistoryScreen extends StatefulWidget {
   const BalanceAndHistoryScreen({Key? key}) : super(key: key);
@@ -82,26 +83,30 @@ String formatTimestamp(String rawDate) {
     }
   }
 
-Widget _buildActionButton(IconData icon, String label) {
-  return Column(
-    children: [
-      CircleAvatar(
-        radius: 28,
-        backgroundColor: Colors.green, // 🔹 Circle green
-        child: Icon(icon, size: 28, color: Colors.white), // 🔹 Icon white
-      ),
-      SizedBox(height: 8),
-      Text(
-        label,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: Colors.black, // 🔹 Text black
+Widget _buildActionButton(IconData icon, String label, VoidCallback onTap) {
+  return GestureDetector(
+    onTap: onTap, // ✅ ye add kiya
+    child: Column(
+      children: [
+        CircleAvatar(
+          radius: 28,
+          backgroundColor: Colors.green,
+          child: Icon(icon, size: 28, color: Colors.white),
         ),
-      ),
-    ],
+        SizedBox(height: 8),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: Colors.black,
+          ),
+        ),
+      ],
+    ),
   );
 }
+
 
  @override
 Widget build(BuildContext context) {
@@ -164,15 +169,28 @@ Widget build(BuildContext context) {
               ),
             ),
             SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildActionButton(Icons.arrow_downward, "Withdraw"),
-                _buildActionButton(Icons.send, "Transfer"),
-                _buildActionButton(Icons.add_circle, "Top Up"),
-                _buildActionButton(Icons.account_balance, "Deposit"),
-              ],
-            ),
+          Row(
+  mainAxisAlignment: MainAxisAlignment.spaceAround,
+  children: [
+    _buildActionButton(Icons.arrow_downward, "Withdraw", () {
+      // withdraw page ka navigation
+      Navigator.push(context, MaterialPageRoute(builder: (_) => SelectBalanceScreen1()));
+    }),
+    _buildActionButton(Icons.send, "Transfer", () {
+      // transfer page ka navigation
+      Navigator.push(context, MaterialPageRoute(builder: (_) => SelectBalanceScreen1()));
+    }),
+    _buildActionButton(Icons.add_circle, "Top Up", () {
+      // top up page ka navigation
+      Navigator.push(context, MaterialPageRoute(builder: (_) => SelectBalanceScreen1()));
+    }),
+    _buildActionButton(Icons.account_balance, "History", () {
+      // ✅ history page ka navigation
+      Navigator.push(context, MaterialPageRoute(builder: (_) => SelectBalanceScreen1()));
+    }),
+  ],
+)
+
           ],
         ),
       ),

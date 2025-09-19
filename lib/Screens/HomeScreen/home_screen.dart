@@ -190,7 +190,7 @@ final BannerSliderController bannerSliderController = Get.put(BannerSliderContro
                   SvgPicture.asset(Images.toMobile,color: Colors.green,),
                     CommonTextWidget.InterSemiBold(
                       color: black171,
-                      text: "Mobile Recharge",
+                      text: "Recharge",
                       fontSize: 12,
                     ),
                   ],

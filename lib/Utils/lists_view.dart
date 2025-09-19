@@ -117,7 +117,7 @@ class Lists {
   static List<Map> rechargeAndBillPaymentsList = [
     {
       "image": Images.mobileRecharge,
-      "text": "Mobile\nRecharge",
+      "text": "Recharge",
       "onTap": () {
         Get.to(() => MobileRechargeScreen());
       }

@@ -10,6 +10,8 @@ import 'package:digitalwalletpaytmcloneapp/Service/Api.dart';
 import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/MunicipalTax/municipal_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/all_balance_history.dart';
+import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/MobileRechargeScreens/mobile_recharge_screen.dart';
+import 'package:digitalwalletpaytmcloneapp/Screens/LinkBankAccountScreen/show_beneficiary_screen.dart';
 
 class BalanceAndHistoryScreen extends StatefulWidget {
   const BalanceAndHistoryScreen({Key? key}) : super(key: key);
@@ -172,18 +174,18 @@ Widget build(BuildContext context) {
           Row(
   mainAxisAlignment: MainAxisAlignment.spaceAround,
   children: [
-    _buildActionButton(Icons.arrow_downward, "Withdraw", () {
+    _buildActionButton(Icons.phone_android, "Recharge", () {
       // withdraw page ka navigation
-      Navigator.push(context, MaterialPageRoute(builder: (_) => SelectBalanceScreen1()));
+      Navigator.push(context, MaterialPageRoute(builder: (_) => MobileRechargeScreen()));
     }),
     _buildActionButton(Icons.send, "Transfer", () {
       // transfer page ka navigation
-      Navigator.push(context, MaterialPageRoute(builder: (_) => SelectBalanceScreen1()));
+      Navigator.push(context, MaterialPageRoute(builder: (_) => ShowBeneficiary()));
     }),
-    _buildActionButton(Icons.add_circle, "Top Up", () {
-      // top up page ka navigation
-      Navigator.push(context, MaterialPageRoute(builder: (_) => SelectBalanceScreen1()));
-    }),
+    // _buildActionButton(Icons.add_circle, "Top Up", () {
+    //   // top up page ka navigation
+    //   Navigator.push(context, MaterialPageRoute(builder: (_) => SelectBalanceScreen1()));
+    // }),
     _buildActionButton(Icons.account_balance, "History", () {
       // ✅ history page ka navigation
       Navigator.push(context, MaterialPageRoute(builder: (_) => SelectBalanceScreen1()));

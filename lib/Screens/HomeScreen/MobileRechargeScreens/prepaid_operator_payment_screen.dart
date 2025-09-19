@@ -70,6 +70,7 @@ class _PrepaidOperatorPaymentScreenState extends State<PrepaidOperatorPaymentScr
       final operatorName = args["operatorName"];
 
       print(" Operator: $operator1, Phone: $phone, Circle: $circle, Amount: $amount");
+      print(" Operator: $operator1, Phone: $phone, Circle: $circle, Amount: $amount");
 
       final response = await ApiService.post("/recharge", {
         "operator": operator1,
@@ -88,6 +89,7 @@ class _PrepaidOperatorPaymentScreenState extends State<PrepaidOperatorPaymentScr
 
       } else {
         Get.snackbar(" Failed", data['message'] ?? "Recharge Failed!");
+        Get.snackbar(" Failed", data['message'] ?? "Recharge Failed!");
         Future.delayed(Duration(seconds: 30), () {
         Get.off(() => HomeScreen());
          });
@@ -98,6 +100,7 @@ class _PrepaidOperatorPaymentScreenState extends State<PrepaidOperatorPaymentScr
     }
     finally {
       setState(() {
+        isSubmitting = false; 
         isSubmitting = false; 
       });
     }

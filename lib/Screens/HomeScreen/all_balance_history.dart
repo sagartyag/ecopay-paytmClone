@@ -3,6 +3,7 @@ import 'package:digitalwalletpaytmcloneapp/Utils/common_text_widget.dart';
 import 'package:digitalwalletpaytmcloneapp/Service/Api.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:digitalwalletpaytmcloneapp/Screens/HomeScreen/MunicipalTax/municipal_screen.dart';
 
 class SelectBalanceScreen1 extends StatefulWidget {
   const SelectBalanceScreen1({Key? key}) : super(key: key);
@@ -58,7 +59,7 @@ class _SelectBalanceScreen1State extends State<SelectBalanceScreen1> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 10) {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
       if (!isMoreLoading) {
         currentPage++;
         fetchTransactionHistory(loadMore: true);
@@ -110,26 +111,49 @@ String formatDate(String dateString) {
                 final txn = transactions[index];
                 final isCredit = txn['status'] == "SUCCESS";
 
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  decoration: BoxDecoration(
-                    color: white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: Offset(0, 2))],
-                    border: Border.all(color: Colors.grey.shade300, width: 1),
-                  ),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: isCredit ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
-                      child: Icon(isCredit ? Icons.arrow_downward : Icons.arrow_upward,
-                          color: isCredit ? Colors.green : Colors.red),
-                    ),
-                    title: Text(txn['remark'] ?? "Transaction", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                    subtitle: Text(formatDate(txn['ttime'] ?? "")),
-                    trailing: Text("₹${txn['amount'] ?? 0}",
-                        style: TextStyle(fontWeight: FontWeight.bold, color: isCredit ? Colors.green : Colors.red, fontSize: 16)),
-                  ),
-                );
+             return Container(
+  margin: const EdgeInsets.only(bottom: 12),
+  decoration: BoxDecoration(
+    color: white,
+    borderRadius: BorderRadius.circular(12),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withOpacity(0.05),
+        blurRadius: 4,
+        offset: const Offset(0, 2),
+      )
+    ],
+    border: Border.all(color: Colors.grey.shade300, width: 1),
+  ),
+  child: ListTile(
+    onTap: () {
+      // ✅ yaha se data next page me bhej rahe hai
+      Get.to(() => TransactionDetailScreen(transaction: txn));
+    },
+    leading: CircleAvatar(
+      backgroundColor:
+          isCredit ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
+      child: Icon(
+        isCredit ? Icons.arrow_downward : Icons.arrow_upward,
+        color: isCredit ? Colors.green : Colors.red,
+      ),
+    ),
+    title: Text(
+      txn['remark'] ?? "Transaction",
+      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+    ),
+    subtitle: Text(formatDate(txn['ttime'] ?? "")),
+    trailing: Text(
+      "₹${txn['amount'] ?? 0}",
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        color: isCredit ? Colors.green : Colors.red,
+        fontSize: 16,
+      ),
+    ),
+  ),
+);
+
               },
             ),
     );
